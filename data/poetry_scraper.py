@@ -26,8 +26,9 @@ for school in schools:
 
     page_number = [page.text for page in pages]
     for i in page_number:
-        driver.get(f"https://www.poetryfoundation.org/poems/browse#page={i}&sort_by=recently_added&school-period={id}")
-        page = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME , "li")))
+        driver2 = webdriver.Chrome(PATH)
+        driver2.get(f"https://www.poetryfoundation.org/poems/browse#page={i}&sort_by=recently_added&school-period={id}")
+        page = WebDriverWait(driver2, 10).until(EC.presence_of_element_located((By.TAG_NAME , "li")))
         titles = page.find_elements_by_tag_name("a")
         authors = page.find_elements_by_class_name("c-txt c-txt_attribution")
 
