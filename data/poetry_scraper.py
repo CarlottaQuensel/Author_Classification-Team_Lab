@@ -39,6 +39,6 @@ for school in schools:
             poems[po_id] = {"title": el[0], "author": el[2], "school": schools[school], "url": el[1]}
             po_id += 1
 
-        
-print(page_number)
+
 driver.quit()
+print(len(poems))
