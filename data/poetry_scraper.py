@@ -14,17 +14,35 @@ schools = {149: "Augustan", 150: "Beat", 151: "Black Mountain",
 163: "Renaissance", 164: "Romantic", 165: "Victorian", 
 304: "Black Arts Movement"}
 
+poems = dict()
+po_id = 1
+
 for school in schools:
     id = school
     driver.get(f"https://www.poetryfoundation.org/poems/browse#page=1&sort_by=recently_added&school-period={id}")
     
     pagination = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "filter-pagination-select")))
-    
     pages = pagination.find_elements_by_tag_name("option")
-    page_link = [page.text for page in pages]
-    #for i in page_link:
-    #    driver.get(f"https://www.poetryfoundation.org/poems/browse#page={i}&sort_by=recently_added&school-period={id}")
+
+    page_number = [page.text for page in pages]
+    for i in page_number:
+        driver.get(f"https://www.poetryfoundation.org/poems/browse#page={i}&sort_by=recently_added&school-period={id}")
+        page = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME , "li")))
+        titles = page.find_elements_by_tag_name("a")
+        authors = page.find_elements_by_class_name("c-txt c-txt_attribution")
+
+        if len(titles) != len(authors):
+            break
+
+        poem_page = [(title.text, title.get_attribute(href), authors.text[4:]) for title in titles for author in authors]
+        for el in poem_page:
+            poems[po_id] = {"title": el[0], "author": el[2], "school": schools[school], "url": el[1]}
+            po_id += 1
+
+        
 
 
-print(page_link)
+
+
+print(page_number)
 driver.quit()
