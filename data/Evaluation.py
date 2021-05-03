@@ -9,10 +9,10 @@ predicted_output    can be true (=1) or false (=0)
 
 file_path = '/Users/katrin/Desktop/Master/Team Lab/data_new.csv'
 
+#read the csv file
 df = pd.read_csv(file_path)
 
-df.shape
-
+#to be continued
 def normalize_output(actual_output, predicted_output):
     probability_dict = sorted({})
     highest_probability = probability_dict.keys()[0]
@@ -20,10 +20,10 @@ def normalize_output(actual_output, predicted_output):
 
 def compute_tp_tn_fn_fp(actual_output, predicted_output):
     '''
-	True positive: actual = 1, predicted = 1
-	True negative: actual = 0, predicted = 0
+    True positive: actual = 1, predicted = 1
+    True negative: actual = 0, predicted = 0
     False positive: actual = 1, predicted = 0
-	False negative: actual = 0, predicted = 1
+    False negative: actual = 0, predicted = 1
 	
     Function sums up the overlap of actual and predicted output
     '''
@@ -55,7 +55,7 @@ recall = compute_recall(tp, fn)
 
 def compute_f1_score(precision, recall):
     '''
-    calculates the F1 score
+    Calculates the F1 score
     '''
     f1_score = (2*precision*recall)/ (precision + recall)
     return f1_score
