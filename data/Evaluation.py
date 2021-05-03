@@ -11,15 +11,6 @@ file_path = '/Users/katrin/Desktop/Master/Team Lab/data_new.csv'
 
 df = pd.read_csv(file_path)
 
-df.head()
-
-'''
-thresh = 0.5
-df['predicted_output'] = (df.predicted_output >= 0.5).astype('int')
-df['actual_output'] = (df.actual_output >= 0.5).astype('int')
-df.head()
-'''
-
 df.shape
 
 def normalize_output(actual_output, predicted_output):
