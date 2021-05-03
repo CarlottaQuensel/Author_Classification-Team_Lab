@@ -1,5 +1,5 @@
 # Author Classification
-Katrin Schmidt -- Carlotta Quensel
+Katrin Schmidt &mdash; Carlotta Quensel
 
 ## About
 This is the project of Team Lab NLP as a part of the master's in Computational Liguistic at Uni Stuttgart. We classify the author of poetry through NLP methods. More info coming soon.
