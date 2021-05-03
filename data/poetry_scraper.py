@@ -1,4 +1,4 @@
-# outdated, better ipynb for data analysis
+# outdated, see data_analysis.ipynb for info about data
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -8,14 +8,15 @@ PATH = "C:\Program Files (x86)\chromedriver.exe"
 # main driver for page finding
 driver = webdriver.Chrome(PATH)
 
-schools = {149: "Augustan"}
-''', 150: "Beat", 151: "Black Mountain", 
-152: "Confessional", 153: "Fugitive", 154: "Georgian", 
-155: "Harlem Renaissance", 156: "Imagist", 157: "Language Poetry", 
-158: "Middle English", 159: "Modern", 160: "NY School", 
-161: "NY School (2.Gen)", 162: "Objectivist", 
-163: "Renaissance", 164: "Romantic", 165: "Victorian", 
-304: "Black Arts Movement"}'''
+schools = {
+    149: "Augustan", 150: "Beat", 151: "Black Mountain", 
+    152: "Confessional", 153: "Fugitive", 154: "Georgian", 
+    155: "Harlem Renaissance", 156: "Imagist", 157: "Language Poetry", 
+    158: "Middle English", 159: "Modern", 160: "NY School", 
+    161: "NY School (2.Gen)", 162: "Objectivist", 
+    163: "Renaissance", 164: "Romantic", 165: "Victorian", 
+    304: "Black Arts Movement"
+    }
 
 poems = dict()
 po_id = 1
@@ -50,7 +51,6 @@ for school in schools:
         for el in poem_page:
             poems[po_id] = {"title": el[0], "author": el[2], "school": schools[school], "url": el[1]}
             po_id += 1
-
 
 driver.quit()
 print(len(poems))
