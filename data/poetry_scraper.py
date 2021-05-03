@@ -40,9 +40,5 @@ for school in schools:
             po_id += 1
 
         
-
-
-
-
 print(page_number)
 driver.quit()
