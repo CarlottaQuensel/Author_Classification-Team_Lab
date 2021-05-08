@@ -114,9 +114,6 @@ class evaluate():
         Args:
             label (string, optional): If set, only the precision score for this label is computed. Defaults to None.
         """
-        if label:
+        #if label:
             # find label in the label dictionary and compute precision for the respective class
             # else compute precision for all classes
-            
-
-            
