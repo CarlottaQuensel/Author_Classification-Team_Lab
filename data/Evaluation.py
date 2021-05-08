@@ -15,6 +15,7 @@ file_path = '/Users/katrin/Desktop/Master/Team Lab/data_new.csv'
 df = pd.read_csv(file_path)
 
 #to be continued
+# TODO: streamline sorting option
 def normalize_output(actual_output, predicted_output):
     probability_dict = sorted({})
     highest_probability = probability_dict.keys()[0]
