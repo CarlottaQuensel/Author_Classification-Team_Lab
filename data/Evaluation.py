@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+# TODO: turn into class
+
 '''
 actual_output       can be true (=1) or false (=0)
 predicted_output    can be true (=1) or false (=0) 
