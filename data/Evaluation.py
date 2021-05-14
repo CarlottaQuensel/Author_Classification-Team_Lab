@@ -2,9 +2,6 @@
 # TODO: turn into class
 # TODO: streamline sorting option
 
-from _typeshed import NoneType
-
-
 class Evaluation():
     """Evaluation for a trained mulit-class single-label classifier.
 
@@ -132,14 +129,24 @@ class Evaluation():
                 # If no instances were assigned the label, all no predictions were wrong
                 return 1
         else:
-            # compute accumulated precision over all classes
+            # Compute accumulated and average precision over all classes
+            # The true positives correspond to the diagonal of the confusion matrix (where gold and predicted labels match up)
             tp_accumulated = sum([self.confusionMatrix[i][i] for i in range(len(self.confusionMatrix))])
+            # The false positives correspond to the columns in the confusion matrix excluding the true positive (where the classifier predicted
+            # the label instead of another gold label)
             fp_accumulated = sum([self.confusionMatrix[i][j] for i in range(len(self.confusionMatrix)) for j in range(len(self.confusionMatrix)) if i != j])
+            # List for all individual precision scores to eventually compute the average
             mean = list()
+            # Compute precision for every class individually as
             for i in range(len(self.confusionMatrix)):
+                # correctly assigned label
                 tp = self.confusionMatrix[i][i]
                 fp = sum([self.confusionMatrix[j][i] for j in range(len(self.confusionMatrix)) if j != i])
+                # divided by all instances that were assigned the label
                 mean.append(tp/(tp+fp))
+            self.prec = mean
+            # Show the precision for each label, the average and the accumulated precision
+            # TODO: pretty format for individual precision
             print(f"Precision\nAccumulated: {tp_accumulated/(tp_accumulated+fp_accumulated)}\nAverage: {sum(mean)/len(mean)}")
             return tp_accumulated/(tp_accumulated+fp_accumulated)
 
@@ -181,7 +188,13 @@ class Evaluation():
                 fn = sum([self.confusionMatrix[i][j] for j in range(len(self.confusionMatrix)) if j != i])
                 # divided by all instances that should be assigned the label
                 mean.append( tp / (tp+fn) )
-            # Show the recall for each label, the average and accumulated recall
+            self.rec = mean
+            # Show the recall for each label, the average and the accumulated recall
+            # TODO: pretty format for individual recall
             print(f"Recall\nAccumulated: {tp_accumulated/(tp_accumulated+fn_accumulated)}\nAverage: {sum(mean)/len(mean)}")
             return tp_accumulated/(tp_accumulated+fn_accumulated)
-                        
+    
+
+    def f_score(self, alpha=0.5):
+        # TODO: finish f-score
+        return None                       
