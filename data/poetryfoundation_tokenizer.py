@@ -15,9 +15,9 @@ with open('/Users/katrin/Desktop/Master/Team Lab/Author_Classification-Team_Lab-
     # so that dictionary_of_poems = {'Author': ['poem1', 'poem2',...]}
     for index, row in data_frame.iterrows():
         if row[1] not in dictionary_of_poems:
-            dictionary_of_poems[row[1]] = [row[4]]
+            dictionary_of_poems[row[1]] = [str([row[4]]).replace('\n', ' ')] #[str([row[4]]).strip('\n')]
         else:
-            dictionary_of_poems[row[1]].append(row[4])
+            dictionary_of_poems[row[1]].append(str(row[4]).replace('\n', ' '))
 
     # create a smaller data_frame for testing
     data_frame_head = {k: dictionary_of_poems[k] for k in list(dictionary_of_poems)[:5]}
@@ -25,5 +25,6 @@ with open('/Users/katrin/Desktop/Master/Team Lab/Author_Classification-Team_Lab-
 
 
     #tokenize_punctuation = WordPunctTokenizer()
+
     #tokens = tokenize_punctuation.tokenize()
  
