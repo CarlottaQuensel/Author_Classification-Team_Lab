@@ -1,3 +1,6 @@
+How to load a pickle extension:
+https://stackoverflow.com/questions/11218477/how-can-i-use-pickle-to-save-a-dict
+
 Related works:
 https://direct.mit.edu/coli/article/40/2/269/1479/Authorship-Attribution-with-Topic-Models?searchresult=1
 https://direct.mit.edu/coli/article/26/4/471/1675/Automatic-Text-Categorization-in-Terms-of-Genre?searchresult=1
