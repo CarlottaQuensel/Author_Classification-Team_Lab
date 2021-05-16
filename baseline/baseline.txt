@@ -1,0 +1,11 @@
+class Feature:
+  property label
+  property label
+  method setLabel
+  method setProperty
+
+class MaxEnt:
+  property features
+  property weight
+  method lern Features
+  method train
