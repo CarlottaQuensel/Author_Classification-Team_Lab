@@ -1,6 +1,7 @@
 # # -*- coding: utf-8 -*-
-# TODO: turn into class
-# TODO: streamline sorting option
+# TODO: add f1/f
+# TODO: delete 'accumulated' scores
+# TODO: prettify the output
 
 class Evaluation():
     """Evaluation for a trained mulit-class single-label classifier.
