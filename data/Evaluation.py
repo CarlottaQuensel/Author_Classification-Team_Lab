@@ -130,26 +130,20 @@ class Evaluation():
                 # If no instances were assigned the label, all no predictions were wrong
                 return 1
         else:
-            # Compute accumulated and average precision over all classes
-            # The true positives correspond to the diagonal of the confusion matrix (where gold and predicted labels match up)
-            tp_accumulated = sum([self.confusionMatrix[i][i] for i in range(len(self.confusionMatrix))])
-            # The false positives correspond to the columns in the confusion matrix excluding the true positive (where the classifier predicted
-            # the label instead of another gold label)
-            fp_accumulated = sum([self.confusionMatrix[i][j] for i in range(len(self.confusionMatrix)) for j in range(len(self.confusionMatrix)) if i != j])
             # List for all individual precision scores to eventually compute the average
-            mean = list()
+            prec_scores = list()
             # Compute precision for every class individually as
             for i in range(len(self.confusionMatrix)):
                 # correctly assigned label
                 tp = self.confusionMatrix[i][i]
                 fp = sum([self.confusionMatrix[j][i] for j in range(len(self.confusionMatrix)) if j != i])
                 # divided by all instances that were assigned the label
-                mean.append(tp/(tp+fp))
-            self.prec = mean
+                prec_scores.append(tp/(tp+fp))
+            self.prec = prec_scores
             # Show the precision for each label, the average and the accumulated precision
             # TODO: pretty format for individual precision
-            print(f"Precision\nAccumulated: {tp_accumulated/(tp_accumulated+fp_accumulated)}\nAverage: {sum(mean)/len(mean)}")
-            return tp_accumulated/(tp_accumulated+fp_accumulated)
+            print(f"Precision\nAverage: {sum(prec_scores)/len(prec_scores)}")
+            return prec_scores
 
     
     def recall(self, label=None):
@@ -174,26 +168,20 @@ class Evaluation():
                 # If none of the gold instances were found by the classifier, the recall is 0
                 return 0
         else:
-            # Compute accumulated and average recall over all classes
-            # The true positives correspond to the diagonal of the confusion matrix (where gold and predicted labels match up)
-            tp_accumulated = sum([self.confusionMatrix[i][i] for i in range(len(self.confusionMatrix))])
-            # The false negatives correspond to the rows in the confusion matrix excluding the true positive (where the gold label was
-            # predicted as another label)
-            fn_accumulated = sum([self.confusionMatrix[i][j] for i in range(len(self.confusionMatrix)) for j in range(len(self.confusionMatrix)) if i != j])
             # List for all individual recall scores to eventually compute the average
-            mean = list()
+            rec_scores = list()
             # Compute recall for every class individually as
             for i in range(len(self.confusionMatrix)):
                 # correctly assigned label
                 tp = self.confusionMatrix[i][i]
                 fn = sum([self.confusionMatrix[i][j] for j in range(len(self.confusionMatrix)) if j != i])
                 # divided by all instances that should be assigned the label
-                mean.append( tp / (tp+fn) )
-            self.rec = mean
+                rec_scores.append( tp / (tp+fn) )
+            self.rec = rec_scores
             # Show the recall for each label, the average and the accumulated recall
             # TODO: pretty format for individual recall
-            print(f"Recall\nAccumulated: {tp_accumulated/(tp_accumulated+fn_accumulated)}\nAverage: {sum(mean)/len(mean)}")
-            return tp_accumulated/(tp_accumulated+fn_accumulated)
+            print(f"Recall\nAverage: {sum(rec_scores)/len(rec_scores)}")
+            return rec_scores
     
 
     def f_score(self, alpha=0.5):
