@@ -6,6 +6,23 @@ class Feature:
 
 class MaxEnt:
   property features
-  property weight
+  property weight (lambdas)
   method lern Features
   method train
+
+
+Number of labels/authors to classify:
+- authors > 5 poems: 852 authors, 10k poems
+- authors >= 5 poems: 1011 authors, 12k poems
+- 30 most prolific authors: 1297 poems
+
+
+
+
+while delta < acc_new - acc_old:
+  ausrechnen von A-B
+  (dafür classify pro label)
+
+  überschreiben von lambda mit lambda - (A-B)
+  acc_old = acc_new
+  acc_new = neu ausrechnen
