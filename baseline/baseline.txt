@@ -1,13 +1,13 @@
 class Feature:
   property label
-  property label
+  property property
   method setLabel
   method setProperty
 
 class MaxEnt:
   property features
-  property weight (lambdas)
-  method lern Features
+  property weight
+  method learnFeatures
   method train
 
 
