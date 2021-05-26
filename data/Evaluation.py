@@ -1,10 +1,8 @@
 # # -*- coding: utf-8 -*-
-# TODO: add f1/f
-# TODO: delete 'accumulated' scores
-# TODO: prettify the output
+# TODO: add showConfusionMatrix()
 
 class Evaluation():
-    """Evaluation for a trained mulit-class single-label classifier.
+    """Evaluation for a trained multi-class single-label classifier.
 
     Methods:
     recall - compute the recall for every or a specific label
@@ -123,7 +121,7 @@ class Evaluation():
                 prec_scores.append(tp/(tp+fp))
             self.prec = prec_scores
             # Show the precision for each label and their average
-            pretty_prec = "Precision:\n"
+            prec_print = "Precision:\n"
             p1 = ""
             p2 = ""
             for i in range(len(prec_scores)):
@@ -131,8 +129,8 @@ class Evaluation():
                 filler = len(self.labels[i])+1
                 p2 += f"{prec_scores[i]:<{filler}}"
             av = sum(prec_scores)/len(prec_scores)
-            pretty_prec += p1 + "Average\n" + p2 + str(av)
-            print(pretty_prec)
+            prec_print += p1 + "Average\n" + p2 + str(av)
+            print(prec_print)
             self.precision_scores = prec_scores
             return prec_scores
 
@@ -170,7 +168,7 @@ class Evaluation():
                 rec_scores.append( tp / (tp+fn) )
             self.rec = rec_scores
             # Show the recall for each label, their average
-            pretty_rec = "Precision:\n"
+            rec_print = "Precision:\n"
             r1 = ""
             r2 = ""
             for i in range(len(rec_scores)):
@@ -178,8 +176,8 @@ class Evaluation():
                 filler = len(self.labels[i])+1
                 r2 += f"{rec_scores[i]:<{filler}}"
             av = sum(rec_scores)/len(rec_scores)
-            pretty_rec += r1 + "Average\n" + r2 + str(av)
-            print(pretty_rec)
+            rec_print += r1 + "Average\n" + r2 + str(av)
+            print(rec_print)
             self.recall_scores = rec_scores
             return rec_scores
     
@@ -256,3 +254,5 @@ class Evaluation():
             # Add the f-scores with the current beta to the evaluation object and return them
             self.f_scores[beta] = f_scores
             return f_scores
+
+
