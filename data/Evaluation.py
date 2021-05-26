@@ -259,8 +259,47 @@ class Evaluation():
         if not self.confusionMatrix:
             print("There are no labels to compute a confusion matrix from, use set_predictions first")
             return None
+        # _________________________________STRING FORMATING_________________________________ #
         # For the gold labels (rows), the name cell needs to be as long as the longest label
-        max_label = max(map(self.labels, len))
+        max_label = max(list(map(len, self.labels)))
+
         # The string for the label columns is as long as all labels combined with a spacer in between each label.
-        col_string = sum(map(self.labels, len))+len(self.labels)-1
-        cm_print = f"{' ':<5}{' ':<{max_label+1}}|"
+        col_string = sum(list(map(len, self.labels)))+len(self.labels)-1
+
+        # The first row only includes the axis description for the columns as the predicted labels
+        cm_print = f"{' ':<{max_label+1}}{'predicted:':<{col_string}}|\n"
+
+        # The column titles are the labels delimited by | as a vertical line
+        col_titles = f"{' ':<{max_label}}"
+        # The lines between rows are dashes with + where they meet a vertical line between columns
+        hlines = f"{'-':{'-'}<{max_label}}+"
+        vlines = ""
+        for label in self.labels:
+            col_titles += label + "|"
+            hlines += f"{'-':{'-'}<{len(label)}}+"
+            vlines += f"{' ':{len(label)}}|"
+        # Adding the column titles, the first horizontal line and the axis description for the rows as the gold labels
+        cm_print += col_titles + "\n"
+        cm_print += hlines + "\n" + f"{'gold:':<{max_label}}|{vlines}\n"
+        # _________________________________STRING FORMATING_________________________________ #
+
+        # Each gold label has its own entry in a dictionary and its own row in the printed table
+        cm = dict()
+        for i, row_label in enumerate(self.labels):
+            # Initializing the predictions for the current gold label
+            cm[row_label] = dict()
+            # Adding the row title to the output string
+            row_string = f"{row_label:<{max_label}}|"
+            for j, col_label in enumerate(self.labels):
+                # Adding the number of times, the gold row label was predicted as the current column label
+                cm[row_label][col_label] = self.confusionMatrix[i][j]
+                # Adding the number as a cell of the printed table
+                row_string += f"{self.confusionMatrix[i][j]:<{col_label}}|"
+            # Adding the whole formated row and a horizontal line to the printed table
+            cm_print += row_string + "\n" + hlines + "\n"
+        
+        # After the whole matrix is traversed, it is printed in a readable format and returned as an interpretable dictionary with the respective labels
+        print(cm_print)
+        return cm
+
+
