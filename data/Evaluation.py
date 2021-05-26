@@ -1,5 +1,4 @@
 # # -*- coding: utf-8 -*-
-# TODO: add showConfusionMatrix()
 
 class Evaluation():
     """Evaluation for a trained multi-class single-label classifier.
