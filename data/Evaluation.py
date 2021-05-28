@@ -1,4 +1,4 @@
-# # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 class Evaluation():
     """Evaluation for a trained multi-class single-label classifier.
