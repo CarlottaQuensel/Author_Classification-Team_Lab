@@ -42,8 +42,10 @@ def learnFeatures(data: list[tuple(tuple(int), str)], class_features: int = 50) 
         # First sort the document properties according to their PMI score
         descending_scores = sorted([property for property in pmi[label]], reverse=True, key = lambda x: pmi[label][x])
         # Then reassign the scores to the properties in the right order
+        # Only return the number of features determined by the user
         class_features = min(len(descending_scores), class_features)
         for feature in descending_scores[:class_features]:
+            # Save feature functions as their own class
             features.append(Feature(label, feature))
 
     return features
