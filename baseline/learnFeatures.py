@@ -19,7 +19,7 @@ Function (list of labelled docs)
         b - scores above x (0.7?) but at least as in a
 """
 
-def learnFeatures(data: list[int], labels: list[str]) -> dict[dict[int]]:
+def learnFeatures(data: list[tuple(tuple(int), str)], class_features: int = 50) -> dict[dict[int]]:
     """Learns the most informative features (= words) for a label set from the set of respective documents.
     The function uses mutual pointwise information to compute the most relevant features for each label.
     Features can be the occurence or absence of a word in the document.
@@ -34,25 +34,22 @@ def learnFeatures(data: list[int], labels: list[str]) -> dict[dict[int]]:
     Returns:
         dict[dict[int]]: document features sorted by label and in descending order by PMI score
     """
-    if len(data) != len(labels):
-        raise IndexError("Inconsistent number of documents and labels.")
     
-    pmi = pointwiseMutualInformation(data, labels)
+    pmi = pointwiseMutualInformation(data)
     # Sort PMI scores by relevance to find the most informative features
+    features = list()
     for label in pmi:
         # First sort the document properties according to their PMI score
         descending_scores = sorted([property for property in pmi[label]], reverse=True, key = lambda x: pmi[label][x])
         # Then reassign the scores to the properties in the right order
-        pmi[label] = {descending_scores[i]: pmi[label][descending_scores[i]] for i in range(len(descending_scores))}
-    
-    return pmi
+        class_features = min(len(descending_scores), class_features)
+        for feature in descending_scores[:class_features]:
+            features.append(Feature(label, feature))
 
-    
-
-    
+    return features
 
 
-def pointwiseMutualInformation(data: list[int], labels: list[str]) -> dict[dict[int]]:
+def pointwiseMutualInformation(data: list[tuple(tuple(int), str)]) -> dict[dict[int]]:
     """Takes data points (document vectors) and their labels and computes the pointwise mutual information for 
     each combination of feature and label.
 
@@ -64,11 +61,11 @@ def pointwiseMutualInformation(data: list[int], labels: list[str]) -> dict[dict[
         dict[dict[int]]: PMI scores sorted by label and feature
     """
     doc_number = len(data)
-    vocabulary = len(data[0])
+    vocabulary = len(data[0][0])
 
     # As the document vectors consist of 1 and 0, summing all documents yields the 
     # number of documents each word occurs in.
-    c_words = [sum([document[i] for document in data]) for i in range(vocabulary)]
+    c_words = [sum([document[0][i] for document in data]) for i in range(vocabulary)]
     # The number of documents the words do not occur in, is the complement given the overall document count
     c_nwords = [doc_number - wordcount for wordcount in c_words]
     
@@ -77,7 +74,7 @@ def pointwiseMutualInformation(data: list[int], labels: list[str]) -> dict[dict[
     c_labels = dict()
     # and each label-word pair
     c_words_labels = dict()
-    for i, label in enumerate(labels):
+    for i, (doc, label) in enumerate(data):
         # Handling the first and subsequent occurences of a label
         try:
             c_labels[label] += 1
@@ -86,9 +83,9 @@ def pointwiseMutualInformation(data: list[int], labels: list[str]) -> dict[dict[
 
         # The frequency of label-word pairs can be computed as a vector sum of document vectors which have the label
         try:
-            c_words_labels[label] = [c_words_labels[label][j] + data[i][j] for j in range(vocabulary)]
+            c_words_labels[label] = [c_words_labels[label][j] + doc[j] for j in range(vocabulary)]
         except KeyError:
-            c_words_labels[label] = data[i]
+            c_words_labels[label] = doc[:]
     
     # Same as the words alone, the joint probability with the labels is also computed for documents not including the words
     c_nwords_labels = dict()
