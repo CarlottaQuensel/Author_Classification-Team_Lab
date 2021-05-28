@@ -1,11 +1,11 @@
-class Feature:
+class Feature: Feature.label = Shakespeare, Feature.property(20,True)
   property label
   property property
   method setLabel
   method setProperty
 
 class MaxEnt:
-  property features
+  property features list[Feature(), Feature(),...]
   property weight
   method learnFeatures
   method train
