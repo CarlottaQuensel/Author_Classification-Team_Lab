@@ -17,7 +17,6 @@ for author in token_dict:
 # Use this list of words as a indexing guide for the word vectors
 # --> 38814 word types
 vocabulary = {word: i for i, word in enumerate(sorted(vocabulary))}
-vec_template = [0 for i in range(len(vocabulary))]
 
 # 39 named authors with at least 30 poems -> 1576 poems
 # 'Alfred, Lord Tennyson', 'Algernon Charles Swinburne', 'Alice Notley', 'Ben Jonson', 'Billy Collins', 
@@ -44,4 +43,13 @@ for author in author_list:
 
 pickle.dump(data, open('C:/Users/HP Envy/Documents/Uni/Master/SS21/topics in emotion analysis/Author_Classification-Team_Lab/data/data.pickle', 'wb'))
 pickle.dump(vocabulary, open('C:/Users/HP Envy/Documents/Uni/Master/SS21/topics in emotion analysis/Author_Classification-Team_Lab/data/vocabulary.pickle', 'wb'))
-print(len(data))
+
+def set_to_vec(pickled_data: set(tuple[tuple[int],str])) -> list[tuple[tuple[int],str]]:
+    vec_template = [0 for i in range(len(vocabulary))]
+    vectors = list()
+    for (document, label) in pickled_data:
+        doc_vec = vec_template[:]
+        for index in document:
+            doc_vec[index] = 1
+        vectors.append((doc_vec,label))
+    return vectors
