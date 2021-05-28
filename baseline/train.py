@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from baseline.learnFeatures import learnFeatures
+from baseline.features import Feature
+from baseline import learnFeatures
+from baseline.learnFeatures import pointwiseMutualInformation
 import numpy as np
 
 '''
@@ -16,9 +18,11 @@ class MaxEnt():
     '''
 
     # Initialize a list of random weights
-    list_of_weights = []
+    weights = list()
+    features = list()
+    '''list_of_weights = []
     random_weight = np.random.randint(-2,2)
-    weights = list_of_weights.append(random_weight * len(learnFeatures.labels))
+    weights = list_of_weights.append(random_weight * len(learnFeatures.labels))'''
 
     def __init__(self, label: str) -> None:
         '''
@@ -32,7 +36,11 @@ class MaxEnt():
                 classify_labels = dict(label = weight) 
         old_accuracy = (self.labels/learnFeatures.doc_number)
 
-    
+    def learnFeatures(self, data):
+        self.features = learnFeatures.learnFeatures(data)
+        self.weights = [np.random.randint(-2,2) for i in range(len(self.features))]
+        print(f"The classifier learned {len(self.features)} features.")
+
     def train(self):
         '''
         Method that calls accuracy and compares to previous time step
