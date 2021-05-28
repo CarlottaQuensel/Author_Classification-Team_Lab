@@ -39,9 +39,24 @@ class MaxEnt():
     def learnFeatures(self, data):
         self.features = learnFeatures.learnFeatures(data)
         self.weights = [np.random.randint(-2,2) for i in range(len(self.features))]
-        print(f"The classifier learned {len(self.features)} features.")
+        self.labels = sorted({feature.label for feature in self.features})
+        print(f"The classifier learned {len(self.features)} features for {len(self.labels)} classes.")
+    
+    def classify(self, document: list[int]) -> str:
+        """The classifier predicts the most probable label from its label set for a document given as a word vector.
 
-    def train(self):
+        Args:
+            document (list[int]): The document to be classified converted into a vector of 0's (word absent) and 1's (word included)
+
+        Returns:
+            str: The label with the highest probability for the given document
+        """
+        p = dict()
+        for label in self.labels:
+            p = sum()# TODO ?
+
+
+    def train(self, data: list[tuple[tuple[int], str]]):
         '''
         Method that calls accuracy and compares to previous time step
         '''
@@ -58,7 +73,7 @@ class MaxEnt():
                 # Compute the derivative of A
                 # δA/δλ = sum( fi(y,x) )
                 derivative_of_A = 0                         
-                for feature in features:
+                for feature in self.features:
                     if y == self.label and x == document:
                         derivative_of_A + 1
 
