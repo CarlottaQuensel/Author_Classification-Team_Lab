@@ -3,6 +3,7 @@ from baseline.features import Feature
 from baseline import learnFeatures
 from baseline.learnFeatures import pointwiseMutualInformation
 import numpy as np
+from math import exp
 
 '''
 after learning x numbers of features, 
@@ -42,7 +43,7 @@ class MaxEnt():
         self.labels = sorted({feature.label for feature in self.features})
         print(f"The classifier learned {len(self.features)} features for {len(self.labels)} classes.")
     
-    def classify(self, document: list[int]) -> str:
+    def classify(self, document: list[int], in_training=False) -> str:
         """The classifier predicts the most probable label from its label set for a document given as a word vector.
 
         Args:
@@ -51,9 +52,18 @@ class MaxEnt():
         Returns:
             str: The label with the highest probability for the given document
         """
+        numerator = dict()
+        for label in self.labels:
+            numerator[label] = exp(sum([self.weigths[i]*self.features[i](label, document) for i in range(len(self.features))]))
+        denominator = sum(numerator.values())
         p = dict()
         for label in self.labels:
-            p = sum()# TODO ?
+            p[label] = numerator[label] / denominator
+        
+        if in_training:
+            return p
+        return max(sorted(p, reverse=True, key=lambda x: p[x]))
+
 
 
     def train(self, data: list[tuple[tuple[int], str]]):
