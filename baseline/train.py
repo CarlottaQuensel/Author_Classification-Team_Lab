@@ -25,26 +25,41 @@ class MaxEnt():
     random_weight = np.random.randint(-2,2)
     weights = list_of_weights.append(random_weight * len(learnFeatures.labels))'''
 
-    def __init__(self, label: str) -> None:
-        '''
-        Classifier that assigns a weight to each label and computes accuracy 
-        '''
-        self.label = label
+    def __init__(self, data: list[tuple[tuple[int], str]]=None, class_features: int=None) -> None:
+        """Initializing an instance of a Maximum Entropy classifier, if data is already given, 
+        then also learning class features
 
-        # Assign a weight to every tuple
-        for label in learnFeatures.pmi:
-            for weight in self.list_of_weights:
-                classify_labels = dict(label = weight) 
-        old_accuracy = (self.labels/learnFeatures.doc_number)
+        Args:
+            data (list[tuple[tuple[int], str]], optional): Dataset as a list of document vector-label pairs. Defaults to None.
+            class_features (int, optional): Number of max learned features per class. Defaults to None.
+        """
+        if data:
+            if class_features:
+                self.learnFeatures(data, class_features)
+            else:
+                self.learnFeatures(data)
 
-    def learnFeatures(self, data):
-        self.features = learnFeatures.learnFeatures(data)
+    def learnFeatures(self, data: list[tuple[tuple[int], str]], class_features: int=50) -> None:
+        """Compute the best features for the classifier based on pointwise mutual information between classes and document features
+        in a dataset and save them in a list with a matching list of (untrained) weights. The features are saved as functions for 
+        the Max Ent classification and have an associated label and a document property as a number, e.g.
+            -> label="Shakespeare" and property=(45, True) (index of "Thou", is in the document).
+
+        Args:
+            data (list[tuple[tuple[int], str]]): Dataset consisting of a list of document-label pairs, where the documents are word vectors
+            class_features (int): The maximum number of features learned per class, default 50
+        """
+        self.features = learnFeatures.learnFeatures(data, class_features)
         self.weights = [np.random.randint(-2,2) for i in range(len(self.features))]
         self.labels = sorted({feature.label for feature in self.features})
         print(f"The classifier learned {len(self.features)} features for {len(self.labels)} classes.")
     
     def classify(self, document: list[int], in_training=False) -> str:
-        """The classifier predicts the most probable label from its label set for a document given as a word vector.
+        """The classifier predicts the most probable label from its label set for a document given as a word vector. The Maximum Entropy classifier works
+        with a function of a document and label, returning either 1 if if applies or 0 if it doesn't apply to the document-label pair and the function's
+        correspinding weight. The probability of a label y given a document is the exponential function of the sum of all weights with applied functions 
+        divided (normalized) by the sum of this exponential for all possible labels: p(y|doc) = exp(Σᵢ wᵢ·fᵢ(y,doc)) / Σ(y') exp(Σᵢ wᵢ·fᵢ(y',doc)).
+        The classifier computes probabilities for all labels and returns the highest scoring label or, in training, the score itself
 
         Args:
             document (list[int]): The document to be classified converted into a vector of 0's (word absent) and 1's (word included)
