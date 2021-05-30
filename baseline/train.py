@@ -21,9 +21,6 @@ class MaxEnt():
     # Initialize a list of random weights
     weights = list()
     features = list()
-    '''list_of_weights = []
-    random_weight = np.random.randint(-2,2)
-    weights = list_of_weights.append(random_weight * len(learnFeatures.labels))'''
 
     def __init__(self, data: list[tuple[tuple[int], str]]=None, class_features: int=None) -> None:
         """Initializing an instance of a Maximum Entropy classifier, if data is already given, 
@@ -89,41 +86,44 @@ class MaxEnt():
 
 
     def train(self, data: list[tuple[tuple[int], str]]):
+        ''' 
+        Method that trains the model via multivariable linear optimization
         '''
-        Method that calls accuracy and compares to previous time step
-        '''
-        
-        new_accuracy = 
-        delta = new_accuracy - self.old_accuracy
 
-        # Adjust the weight until convergence
-        while delta > new_accuracy - self.old_accuracy:
+        total_iterations = 100 
+        n = 1
+        old_lambda = self.weights
+        new_lambda = list()
+        for n in range(total_iterations): 
+            if n != 1:
+                old_lambda = new_lambda
+            for i in self.features:
+                new_lambda.append(old_lambda[i] - partial_derivative(old_lambda[i])
+            n += 1
+        residual = [x1 - x2 for (x1, x2) in zip(new_lambda, old_lambda)]
+  
+    def partial_derivative(self, lambda_i):
 
-            # Compute it for all instances
+        # calculate first summand 'derivative_A'
+        derivative_A = 0                         
+        features(i) # How to refer to f? Input is old_lambda[i], we need feature[i]
+
+            if y == self.label and x == self.document:
+                derivative_A + 1
+
+        # calculate second summmand 'derivative_B'
+        derivative_B = 0                        
+        for label in self.labels:
             for instance in instances:
+                new_feature = dict(label = instance)
+                new_features = ...
+        for new_feature in new_features:
+            if y == self.label and x == self.document:
+                # probability pλ(y|x)
+                # = exp(sum(weights_for_y_given_x)) / exp(sum(weights_for_y'_given_x))
+                probability = np.exp(self.weight * derivative_A/ self.weight * x == document)
+                derivative_B += probability
 
-                # Compute the derivative of A
-                # δA/δλ = sum( fi(y,x) )
-                derivative_of_A = 0                         
-                for feature in self.features:
-                    if y == self.label and x == document:
-                        derivative_of_A + 1
-
-                # Compute the derivative of B
-                # δB/δλ = p(y'|x) fi(y',x)
-                derivative_of_B = 0                        
-                for label in self.labels:
-                    for instance in instances:
-                        new_feature = dict(label = instance)
-                        for new_feature in new_features:
-                            if y == self.label and x == document:
-                                probability = np.exp(weight * derivative_of_A/ weight * x == document)
-                                derivative_of_B += probability
-
-            # Compute the derivative of F                    
-            derivative_of_F = derivative_of_A - derivative_of_B
-            new_lambda = self.old_accuracy - derivative_of_F
-
-
-            # new_features / classify_labels ?
-            # where to initialize?
+        #calculate derivative
+        derivative = derivative_A - derivative_B
+        return derivative  
