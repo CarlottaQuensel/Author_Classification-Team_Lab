@@ -48,10 +48,13 @@ class MaxEnt():
         """
         # Learning the feature-functions uses PMI and is explained more thoroughly in learnFeatures.py
         self.features = learnFeatures.learnFeatures(data, class_features)
+
         # Each function has a corresponding weight, so the same number of weights are randomly initialized
         self.weights = [np.random.randint(-2,2) for i in range(len(self.features))]
+
         # The classifier also has all labels of the training data saved to simplify classification
         self.labels = sorted({feature.label for feature in self.features})
+
         # After learning the features, information about the number of features and labels is shown
         print(f"The classifier learned {len(self.features)} features for {len(self.labels)} classes.")
     
@@ -95,6 +98,8 @@ class MaxEnt():
             data (list[tuple[tuple[int], str]], optional): 
             Dataset as a list of document vector-label pairs.
         '''
+        
+        # compute old accuracy with random weights
 
         total_iterations = 100 
         n = 1
@@ -103,45 +108,46 @@ class MaxEnt():
 
         # optimization process
         for n in range(total_iterations):
-
             # ignore the equation at step 1
             if n != 1:
                 old_lambda = new_lambda
-
+                new_lambda = list()
             # iterate over features and call the partial_derivative    
             for i in self.features:
-                new_lambda.append(old_lambda[i] - partial_derivative(old_lambda[i]))
-            n += 1
-            
+                new_lambda.append(old_lambda[i] - self.partial_derivative(i, old_lambda[i]))
+
+            # check new accuracy
+
         # calculate the residual to check if the optimization works    
         residual = [x1 - x2 for (x1, x2) in zip(new_lambda, old_lambda)]
+        # return weights = new_lambda
   
-    def partial_derivative(self, lambda_i):
+    def partial_derivative(self, i):
         '''
         Method that computes the derivative of the objective function F
         by substracting the derivative of A from the derivative of B.
 
         Args:
-            current lambda from the training method
-        
+            index of current lambda for A
+            current lambda from the training method for B
+            
         Returns:
             derivative of F
         '''
+
         # calculate first summand 'derivative_A'
         derivative_A = 0                         
-        features(i) # How to refer to f? Input is old_lambda[i], we need feature[i]
-
-        if y == self.label and x == self.document:
-            derivative_A + 1
+        for document in self.documents:
+            if self.features[i].apply(self.label, document):
+                derivative_A += 1
 
         # calculate second summmand 'derivative_B'
-        derivative_B = 0                        
+        derivative_B = 0  
+
+        # iterate through all combinations and check if pair is switched on                     
         for label in self.labels:
             for document in self.documents:
-                new_feature = dict(label = document)
-                new_features = ...
-        for new_feature in new_features:
-            if y == self.label and x == self.document:
+                if self.features[i].apply(label, document):
                 # probability pλ(y|x)
                 # = exp(sum(weights_for_y_given_x)) / exp(sum(weights_for_y'_given_x))
                 probability = np.exp(self.weight * derivative_A/ self.weight * x == document)
