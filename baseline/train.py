@@ -3,7 +3,6 @@ from baseline.features import Feature
 from baseline import learnFeatures
 from baseline.learnFeatures import pointwiseMutualInformation
 import numpy as np
-from math import exp
 
 '''
 after learning x numbers of features, 
@@ -55,7 +54,7 @@ class MaxEnt():
         # After learning the features, information about the number of features and labels is shown
         print(f"The classifier learned {len(self.features)} features for {len(self.labels)} classes.")
     
-    def classify(self, document: list[int], in_training=False) -> str:
+    def classify(self, document: list[int], in_training: str=False) -> str:
         """The classifier predicts the most probable label from its label set for a document given as a word vector. The Maximum Entropy classifier works
         with a function of a document and label, returning either 1 if if applies or 0 if it doesn't apply to the document-label pair and the function's
         correspinding weight. The probability of a label y given a document is the exponential function of the sum of all weights with applied functions 
@@ -71,18 +70,22 @@ class MaxEnt():
         # The numerator of the Max Ent-probability is the exponentioal function of every weight*function with the current label and given document
         numerator = dict()
         for label in self.labels:
-            numerator[label] = exp(sum([self.weigths[i]*self.features[i].apply(label, document) for i in range(len(self.features))]))
+            numerator[label] = np.exp(sum([self.weigths[i]*self.features[i].apply(label, document) for i in range(len(self.features))]))
         # As the denominator is the sum of the exponential for all labels, it only depends on the document and is the same for every label
         denominator = sum(numerator.values())
         # The probability of a label then just divides the numerator by the denominator
         p = dict()
         for label in self.labels:
             p[label] = numerator[label] / denominator
-        # The classifier either returns the most probable label or in training returns the labels' probabilities
+        # The classifier either returns the most probable label or in training returns the label's probability
         if in_training:
-            return p
+            return p[in_training]
         return max(sorted(p, reverse=True, key=lambda x: p[x]))
 
+
+    def accuracy():
+        # TODO
+        return None
 
 
     def train(self, data: list[tuple[tuple[int], str]]):
