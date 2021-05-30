@@ -123,73 +123,66 @@ class MaxEnt():
         return tp/len(gold)
 
 
-    def train(self, data: list[tuple[tuple[int], str]]):
+    def train(self, data: list[tuple[tuple[int], str]], min_improvement: float=0.001):
         ''' 
         Method that trains the model via multivariable linear optimization.
         Since the optimization for the lambda vector needs to happen simultaneous, 
         the iterations stop after it counts 100 (instead of a specific value).
 
         Args: 
-            data (list[tuple[tuple[int], str]], optional): 
-            Dataset as a list of document vector-label pairs.
+            data (list[tuple[tuple[int], str]]): 
+                Dataset as a list of document vector-label pairs.
         '''
+        # Training as an optimization process for the weights
+        # Either with fixed number of iterations or until the improvement drops below a threshold (currently at least 0.1% improvement)
         
-        total_iterations = 100 
-        n = 1
-        old_lambda = self.weights
-
         # compute old accuracy with random weights
-        self.accuracy(data, old_lambda)
-        new_lambda = list()
+        old_accuracy = 0
+        new_accuracy = self.accuracy(data)
 
-        # optimization process
-        for n in range(total_iterations):
-            # ignore the equation at step 1
-            if n != 1:
-                old_lambda = new_lambda
-                new_lambda = list()
-            # iterate over features and call the partial_derivative    
-            for i in self.features:
-                new_lambda.append(old_lambda[i] - self.partial_derivative(i))
+        while new_accuracy - old_accuracy >= min_improvement:
+        #total_iterations = 100
+        #for n in range(total_iterations):
+            # Don't reassign the new weights in the first step (no new weights yet)
+            if len(new_lambda):
+                self.weights = new_lambda
+            # Perform stochastic gradient descent by iterating over features and computing the partial_derivative
+            # and save the updated weights temporarily to first make sure that they improve the classifier
+            new_lambda = [self.weights[i] - self.partial_derivative(data, i) for i in range(len(self.features))]
 
-            # check new accuracy
-            self.accuracy(data, new_lambda)
+            # Calculate the accuracy with the new weights to check its improvement
+            new_accuracy = self.accuracy(data, new_lambda)
 
         # calculate the residual to check if the optimization works    
-        residual = [x1 - x2 for (x1, x2) in zip(new_lambda, old_lambda)]
-        self.weights = new_lambda
+        residual = [x1 - x2 for (x1, x2) in zip(new_lambda, self.weights)]
         return self.weights
 
   
-    def partial_derivative(self, i):
+    def partial_derivative(self, data: list[tuple[tuple[int],str]], i: int) -> float:
         '''
         Method that computes the derivative of the objective function F
         by substracting the derivative of A from the derivative of B.
 
         Args:
-            index of current lambda for A
-            current lambda from the training method for B
+            data (list[tuple[tuple[int],str]]): Dataset as a list of document vector-label pairs.
+            i (int): Index of current lambda for the partial derivative ∂A/∂λi - ∂B/∂λi w.r.t. λi
             
         Returns:
-            derivative of F
+            float: Partial derivative of the maximum entropy function F w.r.t. λi
         '''
 
-        # calculate first summand 'derivative_A'
-        derivative_A = 0                         
-        for document in self.documents:
-            if self.features[i].apply(self.label, document):
-                derivative_A += 1
+        # calculate first summand 'derivative_A' as ∂A/∂λi = Σ(y,x) fλ(y|x) or the number of correctly recognized document-label pairs
+        derivative_A = sum([self.features[i].apply(label, document) for document, label in data])
 
         # calculate second summmand 'derivative_B'
         derivative_B = 0  
 
-        # iterate through all combinations and check if pair is switched on                     
+        # Iterate through all label-document combinations and add up the probabilities for the switched on pairs
         for label in self.labels:
-            for document in self.documents:
-                # probability pλ(y|x)
-                # = exp(sum(weights_for_y_given_x)) / exp(sum(weights_for_y'_given_x))
-                probability = self.classify(document, in_training=label)
-                derivative_B += probability * self.features[i].apply(label, document)
+            for document, gold_label in data:
+                # probability pλ(y|x) = exp(sum(weights_for_y_given_x)) / exp(sum(weights_for_y'_given_x))
+                # ∂B/∂λi = Σ(y,x)Σy'        pλ(y'|x)                       *         fλ(y'|x)
+                derivative_B += self.classify(document, in_training=label) * self.features[i].apply(label, document)
 
         # calculate derivative of F
         derivative = derivative_A - derivative_B
