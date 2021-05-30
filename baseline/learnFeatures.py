@@ -46,7 +46,7 @@ def learnFeatures(data: list[tuple[tuple[int], str]], class_features: int = 50) 
         class_features = min(len(descending_scores), class_features)
         for feature in descending_scores[:class_features]:
             # Save feature functions as their own class
-            features.append(Feature(label, feature))
+            features.append(Feature(label, feature[0]))
     print(f"The classifier learned {len(features)} features")
     return features
 
