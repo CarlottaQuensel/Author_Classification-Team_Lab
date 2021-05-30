@@ -57,7 +57,7 @@ class MaxEnt():
         # After learning the features, information about the number of features and labels is shown
         print(f"The classifier learned {len(self.features)} features for {len(self.labels)} classes.")
     
-    def classify(self, document: list[int], in_training: str=False) -> str:
+    def classify(self, document: list[int], in_training: str=False, weights: list[int]=None):
         """The classifier predicts the most probable label from its label set for a document given as a word vector. The Maximum Entropy classifier works
         with a function of a document and label, returning either 1 if if applies or 0 if it doesn't apply to the document-label pair and the function's
         correspinding weight. The probability of a label y given a document is the exponential function of the sum of all weights with applied functions 
@@ -66,14 +66,27 @@ class MaxEnt():
 
         Args:
             document (list[int]): The document to be classified converted into a vector of 0's (word absent) and 1's (word included)
+            in_training (str, optional): When computing the derivative in training, the classifier uses the probability itself and not the label. Defaults to False.
+            weights (list[int], optional): If testing the accuracy of a specific weight set, custom weights can be used. Defaults to None.
 
         Returns:
-            str: The label with the highest probability for the given document
+            None: If the custom weights don't match the classifier's number of functions, it cannot compute any probabilities
+            str: Outside of the training, the label with the highest probability for the given document is returned
+            float: When training, the probability of a specific label is returned for the derivative calculation
+
         """
+        # The default weights to compute the probabilities are the classifier's own weights
+        if not weights:
+            weights = self.weights
+        elif len(weights) != len(self.weights):
+            print(f"The classifier needs exactly one weight per function. You used {len(weights)} weights for {len(self.features)} functions.")
+            return None
+
+        # When testing the a
         # The numerator of the Max Ent-probability is the exponentioal function of every weight*function with the current label and given document
         numerator = dict()
         for label in self.labels:
-            numerator[label] = np.exp(sum([self.weigths[i]*self.features[i].apply(label, document) for i in range(len(self.features))]))
+            numerator[label] = np.exp(sum([weights[i]*self.features[i].apply(label, document) for i in range(len(self.features))]))
         # As the denominator is the sum of the exponential for all labels, it only depends on the document and is the same for every label
         denominator = sum(numerator.values())
         # The probability of a label then just divides the numerator by the denominator
@@ -86,9 +99,28 @@ class MaxEnt():
         return max(sorted(p, reverse=True, key=lambda x: p[x]))
 
 
-    def accuracy():
-        # TODO
-        return None
+    def accuracy(self, data: list[tuple[tuple[int], str]], weights: list[int]=None) -> float:
+        """Compute the basic accuracy of the classifier with a specific weight set as the percentage of correct predictions
+        from the overall number of predictions
+
+        Args:
+            data (list[tuple[tuple[int], str]]): List of datapoints as pairs of a document vector and a label string
+            weights (list[int], optional): Custom weights to compare with the classifier's current weight set. Defaults to None.
+
+        Returns:
+            float: The accuracy as the ratio of correct predictions from all predictions
+        """
+        if not weights:
+            weights = self.weights
+        gold, predicted = list(), list()
+        for doc,label in data:
+            gold.append(label)
+            predicted.append(self.classify(document=doc, weights=weights))
+        tp = 0
+        for label_pair in zip(gold,predicted):
+            if label_pair[0] == label_pair[1]:
+                tp += 1
+        return tp/len(gold)
 
 
     def train(self, data: list[tuple[tuple[int], str]]):
@@ -117,7 +149,7 @@ class MaxEnt():
                 new_lambda = list()
             # iterate over features and call the partial_derivative    
             for i in self.features:
-                new_lambda.append(old_lambda[i] - self.partial_derivative(i, old_lambda[i]))
+                new_lambda.append(old_lambda[i] - self.partial_derivative(i))
 
             # check new accuracy
 
@@ -150,11 +182,10 @@ class MaxEnt():
         # iterate through all combinations and check if pair is switched on                     
         for label in self.labels:
             for document in self.documents:
-                if self.features[i].apply(label, document):
                 # probability pλ(y|x)
                 # = exp(sum(weights_for_y_given_x)) / exp(sum(weights_for_y'_given_x))
-                probability = np.exp(self.weight * derivative_A/ self.weight * x == document)
-                derivative_B += probability
+                probability = self.classify(document, in_training=label)
+                derivative_B += probability * self.features[i].apply(label, document)
 
         # calculate derivative of F
         derivative = derivative_A - derivative_B
