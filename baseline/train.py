@@ -22,16 +22,6 @@ class MaxEnt():
     weights = list()
     features = list()
 
-    def __init__(self, label: str) -> None:
-        '''
-        Classifier that assigns a weight to each label (and computes accuracy)
-        '''
-        self.label = label
-
-        # Assign a weight to every tuple
-        for label in learnFeatures.pmi:
-            for weight in self.list_of_weights:
-                classify_labels = dict(label = weight) 
     def __init__(self, data: list[tuple[tuple[int], str]]=None, class_features: int=None) -> None:
         """Initializing an instance of a Maximum Entropy classifier, if data is already given, 
         then also learning class features
