@@ -3,10 +3,10 @@
 
 class Feature():
     label = str()
-    property = index, included = int(), bool
+    property = index, included = int(), bool()
 
 
-    def __init__(self, label: str, doc_property: tuple(int, bool)) -> None:
+    def __init__(self, label: str, doc_property: tuple[int, bool]) -> None:
         """Initialization of a maximum entropy feature.
         A MaxEnt feature is a binary function that where a document either has a property related to a label or not.
 

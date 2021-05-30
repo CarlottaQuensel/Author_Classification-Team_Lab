@@ -35,7 +35,7 @@ with open(f'{path}poetryfoundation-dataset.csv', encoding="utf-8") as file:
 # ----------------------------------------------------
 # tokenizing the data with nltk
 tokenize_punctuation = WordPunctTokenizer()
-data = {}
+tokenized_dictionary = {}
 
 # iterate over Authors in dictionary
 for author in dictionary_of_poems:
@@ -45,18 +45,18 @@ for author in dictionary_of_poems:
         tokenized_poem = tokenize_punctuation.tokenize(poem)
         
         # create a new dictionary with tokenized poems
-        if author not in data:
-            data[author] = [tokenized_poem]
+        if author not in tokenized_dictionary:
+            tokenized_dictionary[author] = [tokenized_poem]
         else:
-            data[author].append(tokenized_poem)
-pickle.dump(data, open('tokenized_dictionary.pickle', 'wb'))
+            tokenized_dictionary[author].append(tokenized_poem)
+pickle.dump(tokenized_dictionary, open('tokenized_dictionary.pickle', 'wb'))
 #print(tokenized_dictionary)
 
 
 # -----------------------------------------------------------
 # --------------------BUILDING VOCABULARY--------------------
 # -----------------------------------------------------------
-def build_vocab(data: dict[str] = data, min_poems: int = 30, max_authors: int = 0) -> dict[str]:
+def build_vocab(data: dict[str] = tokenized_dictionary, min_poems: int = 30, max_authors: int = 0) -> dict[str]:
     """Take labelled documents and build a vocabulary of the included word types.
 
     Args:
@@ -119,7 +119,7 @@ vocabulary, author_list = build_vocab()
 
 data = set()
 for author in author_list:
-    for poem in data[author]:
+    for poem in tokenized_dictionary[author]:
         vec = set()
         for token in poem:
             vec.add(vocabulary[token])
@@ -133,7 +133,7 @@ pickle.dump(vocabulary, open(f'{path}vocabulary.pickle', 'wb'))
 # --------------------------------------------------------
 # --------------------UNPICKLE TO VECS--------------------
 # --------------------------------------------------------
-def set_to_vec(pickled_data: set(tuple[tuple[int],str]), vocab: dict[str]=vocabulary) -> list[tuple[tuple[int],str]]:
+def set_to_vec(pickled_data: set[tuple[tuple[int],str]], vocab: dict[str]=vocabulary) -> list[tuple[tuple[int],str]]:
     # Initialize all document vectors as not including any words from the vocabulary
     vec_template = [0 for i in range(len(vocab))]
     vectors = list()

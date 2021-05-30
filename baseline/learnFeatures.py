@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from baseline.features import Feature
+from features import Feature
 
 """
 Function (list of labelled docs)
@@ -19,7 +19,7 @@ Function (list of labelled docs)
         b - scores above x (0.7?) but at least as in a
 """
 
-def learnFeatures(data: list[tuple(tuple(int), str)], class_features: int = 50) -> dict[dict[int]]:
+def learnFeatures(data: list[tuple[tuple[int], str]], class_features: int = 50) -> dict[dict[int]]:
     """Learns the most informative features (= words) for a label set from the set of respective documents.
     The function uses mutual pointwise information to compute the most relevant features for each label.
     Features can be the occurence or absence of a word in the document.
@@ -47,11 +47,11 @@ def learnFeatures(data: list[tuple(tuple(int), str)], class_features: int = 50) 
         for feature in descending_scores[:class_features]:
             # Save feature functions as their own class
             features.append(Feature(label, feature))
-
+    print(f"The classifier learned {len(features)} features")
     return features
 
 
-def pointwiseMutualInformation(data: list[tuple(tuple(int), str)]) -> dict[dict[int]]:
+def pointwiseMutualInformation(data: list[tuple[tuple[int], str]]) -> dict[dict[int]]:
     """Takes data points (document vectors) and their labels and computes the pointwise mutual information for 
     each combination of feature and label.
 
@@ -93,7 +93,7 @@ def pointwiseMutualInformation(data: list[tuple(tuple(int), str)]) -> dict[dict[
     c_nwords_labels = dict()
     for label in c_words_labels:
         # These counts are the complement of the documents 
-        c_nwords_labels[label] = [c_labels[label][i] - c_words_labels[label][i] for i in range(vocabulary)]
+        c_nwords_labels[label] = [c_labels[label] - c_words_labels[label][i] for i in range(vocabulary)]
 
     # Convert frequencies/counts into relative frequencies/probabilities for all counts
     p_words = [c_words[i]/doc_number for i in range(len(c_words))]
@@ -105,6 +105,7 @@ def pointwiseMutualInformation(data: list[tuple(tuple(int), str)]) -> dict[dict[
     # Compute pointwise mutual information as p(w,l)/(p(w)*p(l)) with w=word, l=label
     pmi = dict()
     for label in p_labels:
+        pmi[label] = dict()
         for i in range(vocabulary):
             # Scores for occurence of the word
             pmi[label][(i, True)] = p_words_labels[label][i] / (p_words[i] * p_labels[label])
