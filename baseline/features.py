@@ -37,9 +37,9 @@ class Feature():
         """
         # The feature calls for the document to include a word or property.
         if self.included:
-            switch = (self.label == current_label and doc[self.property])
+            switch = (self.label == current_label and doc[self.index])
         # The feature calls for the document not to include a word or property
         else:
-            switch = (self.label == current_label and not doc[self.property])
+            switch = (self.label == current_label and not doc[self.index])
         # The boolean on/off-switch is converted to a number to be multiplied with the weight
         return int(switch)

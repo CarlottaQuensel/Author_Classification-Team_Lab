@@ -108,8 +108,10 @@ def pointwiseMutualInformation(data: list[tuple[tuple[int], str]]) -> dict[dict[
         pmi[label] = dict()
         for i in range(vocabulary):
             # Scores for occurence of the word
-            pmi[label][(i, True)] = p_words_labels[label][i] / (p_words[i] * p_labels[label])
-            # Scores for absence of the word
-            pmi[label][(i, False)] = p_nwords_labels[label][i] / (p_nwords[i] * p_labels[label])
+            if c_words[i]:
+                pmi[label][(i, True)] = p_words_labels[label][i] / (p_words[i] * p_labels[label])
+            else:
+                # Scores for absence of the word
+                pmi[label][(i, False)] = p_nwords_labels[label][i] / (p_nwords[i] * p_labels[label])
     # Scores are sorted by label and feature (word) and returned
     return pmi

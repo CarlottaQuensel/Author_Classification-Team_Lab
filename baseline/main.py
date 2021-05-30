@@ -1,6 +1,7 @@
 #from train import MaxEnt
-from .learnFeatures import learnFeatures
+#from learnFeatures import learnFeatures
 from poetryfoundation_tokenizer import set_to_vec
+from train import MaxEnt
 import pickle
 # Set to either Kati's or Carlotta's file path
 # path = "/Users/katrin/Desktop/Master/Team Lab/Author_Classification-Team_Lab-1/data/"
@@ -37,14 +38,15 @@ def train_test_split(data: list[tuple[tuple[int], str]] = data, split: float = 0
             test.append((doc, label))
     return train, test
 
-learnFeatures(data)
+#learnFeatures(data)
 # For later:
-'''
+
 classifier = MaxEnt()
 train_set, test_set = train_test_split(data)
 classifier.learnFeatures(train_set)
 classifier.train(train_set)
 
+'''
 predicted = list()
 gold = [doc[1] for doc in test_set]
 for doc in test_set:
