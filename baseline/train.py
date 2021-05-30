@@ -39,7 +39,7 @@ class MaxEnt():
         """Compute the best features for the classifier based on pointwise mutual information between classes and document features
         in a dataset and save them in a list with a matching list of (untrained) weights. The features are saved as functions for 
         the Max Ent classification and have an associated label and a document property as a number, e.g.
-            -> label="Shakespeare" and property=(45, True) (index of "Thou", is in the document).
+            -> label="Shakespeare" and property=45 (index of "Thou", is in the document).
 
         Args:
             data (list[tuple[tuple[int], str]]): Dataset consisting of a list of document-label pairs, where the documents are word vectors
@@ -139,6 +139,7 @@ class MaxEnt():
         # compute old accuracy with random weights
         old_accuracy = 0
         new_accuracy = self.accuracy(data)
+        new_lambda = list()
 
         while new_accuracy - old_accuracy >= min_improvement:
         #total_iterations = 100
