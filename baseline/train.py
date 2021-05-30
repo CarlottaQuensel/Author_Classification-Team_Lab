@@ -134,11 +134,12 @@ class MaxEnt():
             Dataset as a list of document vector-label pairs.
         '''
         
-        # compute old accuracy with random weights
-
         total_iterations = 100 
         n = 1
         old_lambda = self.weights
+
+        # compute old accuracy with random weights
+        self.accuracy(data, old_lambda)
         new_lambda = list()
 
         # optimization process
@@ -152,10 +153,13 @@ class MaxEnt():
                 new_lambda.append(old_lambda[i] - self.partial_derivative(i))
 
             # check new accuracy
+            self.accuracy(data, new_lambda)
 
         # calculate the residual to check if the optimization works    
         residual = [x1 - x2 for (x1, x2) in zip(new_lambda, old_lambda)]
-        # return weights = new_lambda
+        self.weights = new_lambda
+        return self.weights
+
   
     def partial_derivative(self, i):
         '''
