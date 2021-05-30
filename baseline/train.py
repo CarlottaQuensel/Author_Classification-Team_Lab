@@ -49,9 +49,13 @@ class MaxEnt():
             data (list[tuple[tuple[int], str]]): Dataset consisting of a list of document-label pairs, where the documents are word vectors
             class_features (int): The maximum number of features learned per class, default 50
         """
+        # Learning the feature-functions uses PMI and is explained more thoroughly in learnFeatures.py
         self.features = learnFeatures.learnFeatures(data, class_features)
+        # Each function has a corresponding weight, so the same number of weights are randomly initialized
         self.weights = [np.random.randint(-2,2) for i in range(len(self.features))]
+        # The classifier also has all labels of the training data saved to simplify classification
         self.labels = sorted({feature.label for feature in self.features})
+        # After learning the features, information about the number of features and labels is shown
         print(f"The classifier learned {len(self.features)} features for {len(self.labels)} classes.")
     
     def classify(self, document: list[int], in_training=False) -> str:
@@ -67,14 +71,17 @@ class MaxEnt():
         Returns:
             str: The label with the highest probability for the given document
         """
+        # The numerator of the Max Ent-probability is the exponentioal function of every weight*function with the current label and given document
         numerator = dict()
         for label in self.labels:
-            numerator[label] = exp(sum([self.weigths[i]*self.features[i](label, document) for i in range(len(self.features))]))
+            numerator[label] = exp(sum([self.weigths[i]*self.features[i].apply(label, document) for i in range(len(self.features))]))
+        # As the denominator is the sum of the exponential for all labels, it only depends on the document and is the same for every label
         denominator = sum(numerator.values())
+        # The probability of a label then just divides the numerator by the denominator
         p = dict()
         for label in self.labels:
             p[label] = numerator[label] / denominator
-        
+        # The classifier either returns the most probable label or in training returns the labels' probabilities
         if in_training:
             return p
         return max(sorted(p, reverse=True, key=lambda x: p[x]))
