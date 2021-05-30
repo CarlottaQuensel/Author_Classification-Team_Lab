@@ -87,35 +87,58 @@ class MaxEnt():
 
     def train(self, data: list[tuple[tuple[int], str]]):
         ''' 
-        Method that trains the model via multivariable linear optimization
+        Method that trains the model via multivariable linear optimization.
+        Since the optimization for the lambda vector needs to happen simultaneous, 
+        the iterations stop after it counts 100 (instead of a specific value).
+
+        Args: 
+            data (list[tuple[tuple[int], str]], optional): 
+            Dataset as a list of document vector-label pairs.
         '''
 
         total_iterations = 100 
         n = 1
         old_lambda = self.weights
         new_lambda = list()
-        for n in range(total_iterations): 
+
+        # optimization process
+        for n in range(total_iterations):
+
+            # ignore the equation at step 1
             if n != 1:
                 old_lambda = new_lambda
+
+            # iterate over features and call the partial_derivative    
             for i in self.features:
-                new_lambda.append(old_lambda[i] - partial_derivative(old_lambda[i])
+                new_lambda.append(old_lambda[i] - partial_derivative(old_lambda[i]))
             n += 1
+            
+        # calculate the residual to check if the optimization works    
         residual = [x1 - x2 for (x1, x2) in zip(new_lambda, old_lambda)]
   
     def partial_derivative(self, lambda_i):
+        '''
+        Method that computes the derivative of the objective function F
+        by substracting the derivative of A from the derivative of B.
 
+        Args:
+            current lambda from the training method
+        
+        Returns:
+            derivative of F
+        '''
         # calculate first summand 'derivative_A'
         derivative_A = 0                         
         features(i) # How to refer to f? Input is old_lambda[i], we need feature[i]
 
-            if y == self.label and x == self.document:
-                derivative_A + 1
+        if y == self.label and x == self.document:
+            derivative_A + 1
 
         # calculate second summmand 'derivative_B'
         derivative_B = 0                        
         for label in self.labels:
-            for instance in instances:
-                new_feature = dict(label = instance)
+            for document in self.documents:
+                new_feature = dict(label = document)
                 new_features = ...
         for new_feature in new_features:
             if y == self.label and x == self.document:
@@ -124,6 +147,6 @@ class MaxEnt():
                 probability = np.exp(self.weight * derivative_A/ self.weight * x == document)
                 derivative_B += probability
 
-        #calculate derivative
+        # calculate derivative of F
         derivative = derivative_A - derivative_B
         return derivative  
