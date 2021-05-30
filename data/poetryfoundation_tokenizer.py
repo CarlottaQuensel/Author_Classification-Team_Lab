@@ -96,7 +96,7 @@ def build_vocab(data: dict[str] = tokenized_dictionary, min_poems: int = 30, max
     pickle.dump(vocabulary, open(f'{path}vocabulary.pickle', 'wb'))
     return vocabulary, author_list
 
-# 39 named authors with at least 30 poems (-> 1576 poems):
+# 39 named authors with at least 30 poems (-> 1569 poems):
 #       'Alfred, Lord Tennyson', 'Algernon Charles Swinburne', 'Alice Notley', 'Ben Jonson', 'Billy Collins', 'Carl Sandburg', 
 #      'Christina Rossetti', 'David Ferry', 'Dean Young', 'Edgar Lee Masters', 'Edmund Spenser', 'Emily Dickinson', 
 #       'Frank Stanford', 'George Herbert', 'Gwendolyn Brooks', 'Henry Wadsworth Longfellow', 'Jane Hirshfield', 'John Ashbery', 
