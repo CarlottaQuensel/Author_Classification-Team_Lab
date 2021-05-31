@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from features import Feature
-
+import pickle
+vocab = pickle.load(open('C:/Users/HP Envy/Documents/Uni/Master/SS21/topics in emotion analysis/Author_Classification-Team_Lab/data/vocabulary.pickle', 'rb'))
 """
 Function (list of labelled docs)
     sum up/collapse document feature vectors:
@@ -108,6 +109,8 @@ def pointwiseMutualInformation(data: list[tuple[tuple[int], str]]) -> dict[dict[
         pmi[label] = dict()
         for i in range(vocabulary):
             # Scores for occurence of the word
+            if not c_words[i] or not c_nwords[i]:
+                print(i, c_words[i], list(vocab.keys())[i])
             if c_words[i]:
                 pmi[label][(i, True)] = p_words_labels[label][i] / (p_words[i] * p_labels[label])
             else:
