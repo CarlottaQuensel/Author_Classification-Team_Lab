@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from baseline.features import Feature
-from baseline import learnFeatures
-from baseline.learnFeatures import pointwiseMutualInformation
+from baseline.learnFeatures import *
+#from baseline.learnFeatures import pointwiseMutualInformation
 import numpy as np
 
 '''
