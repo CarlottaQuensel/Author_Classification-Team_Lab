@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from baseline.features import Feature
+from features import Feature
 import pickle
 
 # Set either to Kati's or Carlottas path
 
-vocab = pickle.load(open('C:/Users/HP Envy/Documents/Uni/Master/SS21/topics in emotion analysis/Author_Classification-Team_Lab/data/vocabulary.pickle', 'rb'))
-# vocab = pickle.load(open('/Users/katrin/Desktop/Master/Team_Lab/Author_Classification-Team_Lab-1/data/vocabulary.pickle', 'rb'))
+#vocab = pickle.load(open('C:/Users/HP Envy/Documents/Uni/Master/SS21/topics in emotion analysis/Author_Classification-Team_Lab/data/vocabulary.pickle', 'rb'))
+#vocab = pickle.load(open('/Users/katrin/Desktop/Master/Team_Lab/Author_Classification-Team_Lab-1/data/vocabulary.pickle', 'rb'))
 
 """
 Function (list of labelled docs)
