@@ -1,5 +1,5 @@
 from train import MaxEnt
-from evaluation import Evaluation
+from Evaluation import Evaluation
 import pickle
 
 # Set to either Kati's or Carlotta's file path
@@ -83,7 +83,6 @@ def tok_to_vec(data: list[tuple[list[str], str]], vocabulary: dict[str]) -> list
 
 classifier = MaxEnt()
 train_set, test_set, vocabulary = build_dataset(token_data)
-print(len(train_set), len(vocabulary))
 classifier.learnFeatures(train_set, vocabulary=vocabulary)
 classifier.train(train_set, trace=True)
 

@@ -203,9 +203,12 @@ class MaxEnt():
         # Iterate through all label-document combinations and add up the probabilities for the switched on pairs
         for label in self.labels:
             for document, gold_label in data:
-                # probability pλ(y|x) = exp(sum(weights_for_y_given_x)) / exp(sum(weights_for_y'_given_x))
-                # ∂B/∂λi = Σ(y,x)Σy'        pλ(y'|x)                       *         fλ(y'|x)
-                derivative_B += self.classify(document, in_training=label) * self.features[i].apply(label, document)
+                if self.features[i].apply(label, document):
+                    # probability pλ(y|x) = exp(sum(weights_for_y_given_x)) / exp(sum(weights_for_y'_given_x))
+                    # ∂B/∂λi = Σ(y,x)Σy'        pλ(y'|x)                       *         fλ(y'|x)
+                    derivative_B += self.classify(document, in_training=label)
+                    # As f is either 0 or 1, we can replace it in the formula with an if query to minimize the 
+                    # number of unnecessary classifications during training
 
         # calculate derivative of F
         derivative = derivative_A - derivative_B
