@@ -1,53 +1,90 @@
-#from train import MaxEnt
-#from learnFeatures import learnFeatures
-from poetryfoundation_tokenizer import set_to_vec
 from train import MaxEnt
 import pickle
 
 # Set to either Kati's or Carlotta's file path
 #path = "/Users/katrin/Desktop/Master/Team_Lab/Author_Classification-Team_Lab-1/data/"
 
-#path = 'C:/Users/HP Envy/Documents/Uni/Master/SS21/topics in emotion analysis/Author_Classification-Team_Lab/data/'
+path = 'C:/Users/HP Envy/Documents/Uni/Master/SS21/topics in emotion analysis/Author_Classification-Team_Lab/data/'
 
+token_data = pickle.load(open(f'{path}tokenized_dictionary.pickle', 'rb'))
 
-data = pickle.load(open(f'{path}data.pickle', 'rb'))
-vocab = pickle.load(open(f'{path}vocabulary.pickle', 'rb'))
-data = set_to_vec(data, vocab)
+def build_dataset(raw_data: dict[str], train_split: float = 0.8, min_poems: int = 30, max_author: int = None):
+    """Reads a dictionary of tokenized documents sorted by author, chooses the data according to the set constrictions
+    on the least number of poems per author or maximum number of poets overall and then converts the chosen data into a 
+    training and test set made of bag-of-word vectors with author labels and an accompanying vocabulary dictionary.
 
-def train_test_split(data: list[tuple[tuple[int], str]] = data, split: float = 0.8):
-    # Training and test data is split in a 80-20 ratio
+    Args:
+        raw_data (dict[str]): The documents as lists of tokens sorted into lists by author
+        train_split (float, optional): Ratio of training and testing data. Defaults to 0.8.
+        min_poems (int, optional): Least number of poems per author to be included in the data. Defaults to 30.
+        max_author (int, optional): Maximum number of authors overall. Defaults to None.
+    """
+    # Only look at the entries of authors who wrote at least min_poems number poems
+    authors = sorted([author for author in raw_data.keys() if len(raw_data[author]) >= min_poems and author != "Anonymous"], reverse=True, key=lambda x: len(raw_data[x]))
+    if max_author:
+        authors = authors[:max_author]
+    # Split the data into a training and testing part, the default is a 80-20 ratio
     train, test = list(), list()
-    # Counting poems per author
-    authors = dict()
-    for doc,label in data:
-        try:
-            authors[label] += 1
-        except KeyError:
-            authors[label] = 1
-    # For each author save the maximum number of poems in the training set and 
-    # the current number of poems in the training set (at initialization 0)
-    authors = {author: [int(split*authors[author]), 0] for author in authors}
-    # For all datapoints, check if enough poems of this author are in the training data and 
-    # decide from that if the datapoint belongs in the training or test data
-    for doc, label in data:
-        count = authors[label]
-        # If there are less poems than the maximum number of this author in the training data,
-        if count[0] > count[1]:
-            # then put the current datapoint into the training data and update the numbers
-            train.append((doc, label))
-            authors[label][1] += 1
-        # If enough poems are in training, use the datapoint for the test data
-        else:
-            test.append((doc, label))
-    return train, test
+    # Types are all the unique tokens in the data later used as the vocabulary
+    types = set()
+    for author in authors:
+        # Both train and test set should include poems from all chosen authors, 
+        # so the data is split for each author individually instead of globally
+        round_split = int(train_split*len(raw_data[author]))
+        for i in range(len(raw_data[author])):
+            if i < round_split:
+                # The words from the training data are used in the vocabulary
+                types.union(set(raw_data[author][i]))
+                # The train set consists of pairs of a poem and corresponding author label
+                train.append((raw_data[author][i], author))
+            else:
+                # The test set is build the same as the train set but its words are not taken into account
+                # for the vocabulary as they will not be used in training anyway
+                test.append((raw_data[author][i], author))
 
-#learnFeatures(data)
-# For later:
+    # The dictionary to relate the indices of word vectors to word types from the data set
+    vocabulary = {word: index for index, word in enumerate(sorted(types))}
+    # Converting the training data from token lists into word vectors
+    train = tok_to_vec(train, vocabulary)
+    test = tok_to_vec(test, vocabulary)
+    
+    return train, test, vocabulary
+
+
+def tok_to_vec(data: list[tuple[list[str], str]], vocabulary: dict[str]) -> list[tuple[list[int], str]]:
+    """Takes a list of poem-author pairs where the poems are saved as token lists and converts them into word vectors
+    with the help of an external vocabulary.
+
+    Args:
+        data (list[tuple[list[str], str]]): List of the poem-author pairs where the poem representation is to be changed
+        vocabulary (dict[str]): External dictionary that assigns indices in the word vector to each of its entries
+
+    Returns:
+        list[tuple[list[int], str]]: The same data list but with the poems changed trom token lists to word vectors
+    """
+    # Each vector has the size of the vocabulary and consists of binary indicators on the inclusion or 
+    # absence of a word in the current poem
+    vocab_size = len(vocabulary)
+    # For every poem in tokenized form, a blank word vector is initialized (with only 0's/no words)
+    for i, (tok_poem, label) in enumerate(data):
+        vec_poem = [0 for i in range(vocab_size)]
+        # Every word included in the poem that is part of the vocabulary is marked in the vector representation
+        for token in tok_poem:
+            try:
+                vec_poem[vocabulary[token]] = 1
+            except KeyError:
+                # If the poem was not used in building the vocabulary, it might include unknown words that are ignored
+                continue
+        # The vector representation replaces the token representation in the poem-author pair
+        data[i] = (vec_poem, label)
+    # The list of converted datapoints is returned
+    return data
+
 
 classifier = MaxEnt()
-train_set, test_set = train_test_split(data)
-classifier.learnFeatures(train_set)
-classifier.train(train_set)
+train_set, test_set, vocabulary = build_dataset(token_data)
+classifier.learnFeatures(train_set, vocabulary=vocabulary)
+classifier.train(train_set, trace=True)
 
 '''
 predicted = list()
