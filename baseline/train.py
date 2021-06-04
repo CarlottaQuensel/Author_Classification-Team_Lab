@@ -102,7 +102,6 @@ class MaxEnt():
         p = dict()
         for label in self.labels:
             p[label] = numerator[label] / denominator
-            print(label, p[label])
         # The classifier either returns the most probable label or in training returns the label's probability
         if in_training:
             return p[in_training]

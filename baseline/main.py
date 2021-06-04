@@ -31,17 +31,16 @@ def build_dataset(raw_data: dict[str], train_split: float = 0.8, min_poems: int 
         # Both train and test set should include poems from all chosen authors, 
         # so the data is split for each author individually instead of globally
         round_split = int(train_split*len(raw_data[author]))
-        for i in range(len(raw_data[author])):
+        for i, poem in enumerate(raw_data[author]):
             if i < round_split:
                 # The words from the training data are used in the vocabulary
-                types.union(set(raw_data[author][i]))
+                types = types.union(set(poem))
                 # The train set consists of pairs of a poem and corresponding author label
                 train.append((raw_data[author][i], author))
             else:
                 # The test set is build the same as the train set but its words are not taken into account
                 # for the vocabulary as they will not be used in training anyway
                 test.append((raw_data[author][i], author))
-
     # The dictionary to relate the indices of word vectors to word types from the data set
     vocabulary = {word: index for index, word in enumerate(sorted(types))}
     # Converting the training data from token lists into word vectors
@@ -83,6 +82,7 @@ def tok_to_vec(data: list[tuple[list[str], str]], vocabulary: dict[str]) -> list
 
 classifier = MaxEnt()
 train_set, test_set, vocabulary = build_dataset(token_data)
+print(len(train_set), len(vocabulary))
 classifier.learnFeatures(train_set, vocabulary=vocabulary)
 classifier.train(train_set, trace=True)
 
