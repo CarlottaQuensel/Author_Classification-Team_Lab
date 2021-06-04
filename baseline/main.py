@@ -1,4 +1,5 @@
 from train import MaxEnt
+from evaluation import Evaluation
 import pickle
 
 # Set to either Kati's or Carlotta's file path
@@ -86,7 +87,7 @@ print(len(train_set), len(vocabulary))
 classifier.learnFeatures(train_set, vocabulary=vocabulary)
 classifier.train(train_set, trace=True)
 
-'''
+
 predicted = list()
 gold = [doc[1] for doc in test_set]
 for doc in test_set:
@@ -95,4 +96,3 @@ for doc in test_set:
 eva = Evaluation(gold, predicted)
 eva.f_score()
 eva.showConfusionMatrix()
-'''
