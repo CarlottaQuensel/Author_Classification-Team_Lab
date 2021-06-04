@@ -123,15 +123,12 @@ class MaxEnt():
         """
         if not weights:
             weights = self.weights
-        gold, predicted = list(), list()
-        for doc,label in data:
-            gold.append(label)
-            predicted.append(self.classify(document=doc, weights=weights))
         tp = 0
-        for label_pair in zip(gold,predicted):
-            if label_pair[0] == label_pair[1]:
+        for doc,label in data:
+            prediction = self.classify(document=doc, weights=weights)
+            if label == prediction:
                 tp += 1
-        return tp/len(gold)
+        return tp/len(data)
 
 
     def train(self, data: list[tuple[tuple[int], str]], min_improvement: float = 0.001, trace: bool = False):
