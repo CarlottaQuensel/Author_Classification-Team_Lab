@@ -46,7 +46,7 @@ class MaxEnt():
             class_features (int): The maximum number of features learned per class, default 50
         """
         # Learning the feature-functions uses PMI and is explained more thoroughly in learnFeatures.py
-        self.features = learnFeatures.learnFeatures(data, class_features)
+        self.features = learnFeatures(data, class_features)
 
         # Each function has a corresponding weight, so the same number of weights are randomly initialized
         self.weights = [np.random.randint(-2,2) for i in range(len(self.features))]

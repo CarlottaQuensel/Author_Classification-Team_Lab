@@ -4,7 +4,7 @@ import pickle
 # TODO: think about replacing '\n' by ' .' --> if ' .' is followed by '.'
 
 #path = "/Users/katrin/Desktop/Master/Team Lab/Author_Classification-Team_Lab-1/data/"
-#path = "C:/Users/HP Envy/Documents/Uni/Master/SS21/topics in emotion analysis/Author_Classification-Team_Lab/data/"
+path = "C:/Users/HP Envy/Documents/Uni/Master/SS21/topics in emotion analysis/Author_Classification-Team_Lab/data/"
 
 
 # ----------------------------------------------------
@@ -42,7 +42,7 @@ for author in dictionary_of_poems:
 
     # iterate over each poem per Author
     for poem in dictionary_of_poems[author]:
-        tokenized_poem = tokenize_punctuation.tokenize(poem)
+        tokenized_poem = [token.lower() for token in tokenize_punctuation.tokenize(poem)]
         
         # create a new dictionary with tokenized poems
         if author not in tokenized_dictionary:
