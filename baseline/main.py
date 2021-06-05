@@ -82,8 +82,9 @@ def tok_to_vec(data: list[tuple[list[str], str]], vocabulary: dict[str]) -> list
 
 
 classifier = MaxEnt()
-train_set, test_set, vocabulary = build_dataset(token_data)
-classifier.learnFeatures(train_set, vocabulary=vocabulary)
+train_set, test_set, vocabulary = build_dataset(token_data, max_author=20)
+classifier.learnFeatures(train_set, class_features=15, vocabulary=vocabulary)
+train_set = train_set[:100]
 classifier.train(train_set, trace=True)
 
 
