@@ -31,6 +31,6 @@ class Feature():
             0: If the document doesn't match the property the feature needs or another label is currently considered.
         """
         # The function calls for the label to match the function and for the document to include a word or property.
-        switch = (self.label == current_label and doc[self.property])
+        switch = (self.label == current_label and bool(doc[self.property]))
         # The boolean on/off-switch is converted to a number to be multiplied with the weight
         return int(switch)

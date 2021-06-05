@@ -167,12 +167,15 @@ class MaxEnt():
                     print(f"In the {i}. iteration, the classifier's accuracy improved by {new_accuracy - old_accuracy} and is now at {new_accuracy}.")
             # Perform stochastic gradient descent by iterating over features and computing the partial_derivative
             # and save the updated weights temporarily to first make sure that they improve the classifier
-            new_lambda = [self.weights[i] - self.partial_derivative(data, i) for i in range(len(self.features))]
+            gradient = self.partial_derivative(data)
+            new_lambda = [self.weights[i] - gradient[i] for i in range(len(self.features))]
 
             # Calculate the accuracy with the new weights to check its improvement
+            old_accuracy = new_accuracy
             new_accuracy = self.accuracy(data, new_lambda)
             if trace:
                 acc.append(new_accuracy)
+                i += 1
 
         if trace:
             print(f"The training consisted of {i} optimization steps in which the accuracy improved from {acc[0]} to {acc[-1]}.")
@@ -180,24 +183,43 @@ class MaxEnt():
             return acc
 
   
-    def partial_derivative(self, data: list[tuple[tuple[int],str]], i: int) -> float:
+    def partial_derivative(self, data: list[tuple[tuple[int],str]]) -> list[float]:
         '''
         Author: Katrin Schmidt
-        Method that computes the derivative of the objective function F
-        by substracting the derivative of A from the derivative of B.
+        Method that computes the partial derivatives of the objective function F
+        by substracting the derivative of A from the derivative of B w.r.t λi
 
         Args:
-            data (list[tuple[tuple[int],str]]): Dataset as a list of document vector-label pairs.
-            i (int): Index of current lambda for the partial derivative ∂A/∂λi - ∂B/∂λi w.r.t. λi
+            data (list[tuple[tuple[int],str]]): 
+                Dataset as a list of document vector-label pairs to apply the partial dervative
+                function to for each weight λi
             
         Returns:
-            float: Partial derivative of the maximum entropy function F w.r.t. λi
+            list[float]: Gradient  comprised of partial derivatives of the maximum entropy function F w.r.t. λi
         '''
 
-        # calculate first summand 'derivative_A' as ∂A/∂λi = Σ(y,x) fλ(y|x) or the number of correctly recognized document-label pairs
-        derivative_A = sum([self.features[i].apply(label, document) for document, label in data])
-
-        # calculate second summmand 'derivative_B'
+        # ∂F/∂λi = ∂A/∂λi - ∂B/∂λi
+        derivative_A = 0#[0 for i in range(len(self.weights))]
+        derivative_B = 0#[0 for i in range(len(self.weights))]
+        gradient = list()
+        # The gradient is comprised of the partial derivatives with regard to each λi
+        for lambda_i in range(len(self.weights)):
+            for document, gold_label in enumerate(data):
+                # Calculate first summand as ∂A/∂λi = Σ(y,x) fλ(y|x) 
+                # or the number of correctly recognized document-label pairs
+                derivative_A += self.features[lambda_i].apply(gold_label, document)
+                # Calculate second summmand ∂B/∂λi as the probability of all label-doc pairs that could be recognized
+                for prime_label in self.labels:
+                    # probability pλ(y|x) = exp(sum(weights_for_y_given_x)) / exp(sum(weights_for_y'_given_x))
+                    # ∂B/∂λi = Σ(y,x)Σy'        pλ(y'|x)                       *         fλ(y'|x)
+                    if self.features[lambda_i].apply(prime_label, document):
+                        # As f is either 0 or 1, we can replace it in the formula with an if-query to minimize the 
+                        # number of unnecessary classifications during training that would be multiplied with 0
+                        derivative_B += self.classify(document, in_training=prime_label)
+            # calculate derivative of F
+            gradient.append(derivative_A-derivative_B)
+        return gradient
+        '''# calculate second summmand 'derivative_B'
         derivative_B = 0  
 
         # Iterate through all label-document combinations and add up the probabilities for the switched on pairs
@@ -212,4 +234,4 @@ class MaxEnt():
 
         # calculate derivative of F
         derivative = derivative_A - derivative_B
-        return derivative  
+        return derivative  '''
