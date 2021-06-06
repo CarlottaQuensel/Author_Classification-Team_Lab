@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# TODO: make comment for class description
 
 class Feature():
     label = str()

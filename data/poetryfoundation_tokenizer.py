@@ -1,10 +1,9 @@
 from nltk.tokenize import WordPunctTokenizer
 import pandas
 import pickle
-# TODO: think about replacing '\n' by ' .' --> if ' .' is followed by '.'
 
-#path = "/Users/katrin/Desktop/Master/Team Lab/Author_Classification-Team_Lab-1/data/"
-path = "C:/Users/HP Envy/Documents/Uni/Master/SS21/topics in emotion analysis/Author_Classification-Team_Lab/data/"
+# TODO: Set to the file path of the current folder
+path = ""
 
 
 # ----------------------------------------------------

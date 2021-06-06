@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from features import Feature
 from learnFeatures import *
-#from baseline.learnFeatures import pointwiseMutualInformation
 import numpy as np
-#import random
 
 class MaxEnt():
     '''

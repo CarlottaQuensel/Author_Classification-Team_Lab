@@ -4,11 +4,8 @@ from train import MaxEnt
 from evaluation import Evaluation
 import pickle
 
-# Set to either Kati's or Carlotta's file path
-#path = "/Users/katrin/Desktop/Master/Team_Lab/Author_Classification-Team_Lab-1/data/"
-
-path = 'C:/Users/HP Envy/Documents/Uni/Master/SS21/topics in emotion analysis/Author_Classification-Team_Lab/data/'
-
+# TODO: Set to the file path of the current folder
+path = ""
 token_data = pickle.load(open(f'{path}tokenized_dictionary.pickle', 'rb'))
 
 def build_dataset(raw_data: dict[str], train_split: float = 0.75, min_poems: int = 30, max_author: int = None):
