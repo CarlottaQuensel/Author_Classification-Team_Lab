@@ -54,10 +54,10 @@ class MaxEnt():
             self.vocabulary = vocabulary
 
         # Learning the feature-functions uses PMI and is explained more thoroughly in learnFeatures.py
-        self.features = learnFeatures(data, class_features)
+        self.features = learnFeatures(data, class_features, vocab=vocabulary)
 
         # Each function has a corresponding weight, so the same number of weights are randomly initialized
-        self.weights = [np.random.randint(-2,2) for i in range(len(self.features))]
+        self.weights = [0.1 for i in range(len(self.features))]#[np.random.randint(-2,2) for i in range(len(self.features))]
 
         # The classifier also has all labels of the training data saved to simplify classification
         self.labels = sorted({feature.label for feature in self.features})
@@ -76,13 +76,13 @@ class MaxEnt():
 
         Args:
             document (list[int]): The document to be classified converted into a vector of 0's (word absent) and 1's (word included)
-            in_training (str, optional): When computing the derivative in training, the classifier uses the probability itself and not the label. Defaults to False.
+            in_training (bool, optional): When computing the derivative in training, the classifier uses the probabilities itself and not the label. Defaults to False.
             weights (list[int], optional): If testing the accuracy of a specific weight set, custom weights can be used. Defaults to None.
 
         Returns:
             None: If the custom weights don't match the classifier's number of functions, it cannot compute any probabilities
             str: Outside of the training, the label with the highest probability for the given document is returned
-            float: When training, the probability of a specific label is returned for the derivative calculation
+            dict[str]: When training, the probability of all labels is returned for the derivative calculation
 
         """
         # The default weights to compute the probabilities are the classifier's own weights
@@ -92,7 +92,7 @@ class MaxEnt():
             print(f"The classifier needs exactly one weight per function. You used {len(weights)} weights for {len(self.features)} functions.")
             return None
 
-        # The numerator of the Max Ent-probability is the exponentioal function of every weight*function with the current label and given document
+        # The numerator of the Max Ent-probability is the exponential function of every weight*function with the current label and given document
         numerator = dict()
         for label in self.labels:
             numerator[label] = np.exp(sum([weights[i]*self.features[i].apply(label, document) for i in range(len(self.features))]))
@@ -105,7 +105,8 @@ class MaxEnt():
         # The classifier either returns the most probable label or in training returns the label's probability
         if in_training:
             return p[in_training]
-        return max(sorted(p, reverse=True, key=lambda x: p[x]))
+        else:
+            return max(p.keys(), key=lambda x: p[x])
 
 
     def accuracy(self, data: list[tuple[tuple[int], str]], weights: list[int]=None) -> float:
@@ -144,45 +145,45 @@ class MaxEnt():
             min_improvement (float, optional): The minimum accuracy improvement needed for a new iteration of optimization. Defaults to 0.0001
             trace (boolean, optional): Switch on to track the development of the accuracy during the iterative process.
         '''
-        # Training as an optimization process for the weights
-        # Either with fixed number of iterations or until the improvement drops below a threshold (currently at least 0.1% improvement)
+        # Training as an optimization process for the weights until the improvement drops below a threshold (currently at least 0.1% improvement)
         
         # compute old accuracy with random weights
         old_accuracy = 0
+        old_loss = 10000
+        new_loss = 0
+        loss = list()
         new_accuracy = self.accuracy(data)
         if trace:
-            print(f"With randomized weights for the features, the classifier's accuracy is {new_accuracy}.")
+            print(f"Accuracy without weights: {new_accuracy}.")
             acc = [new_accuracy]
         new_lambda = list()
 
-        if trace:
-            i = 0
-        while i<10:#new_accuracy - old_accuracy >= min_improvement:
-        #total_iterations = 100
-        #for n in range(total_iterations):
+        i = 1
+        while new_accuracy - old_accuracy >= min_improvement or old_loss-new_loss >= min_improvement:
             # Don't reassign the new weights in the first step (no new weights yet)
             if len(new_lambda):
                 self.weights = new_lambda
-                if trace:
-                    print(f"{i}. iteration: accuracy improved by {new_accuracy - old_accuracy}, now at {new_accuracy}.")
-            # Perform stochastic gradient descent by iterating over features and computing the partial_derivative
+            # Perform stochastic gradient assent by iterating over features and computing the partial_derivative
             # and save the updated weights temporarily to first make sure that they improve the classifier
-            new_lambda = [self.weights[i] - self.partial_derivative(data, i) for i in range(len(self.features))]
-
-            # Calculate the accuracy with the new weights to check its improvement
+            new_lambda = [self.weights[i] + self.partial_derivative(data, lambda_i=i) for i in range(len(self.features))]
+            # Calculate the improvement of accuracy and check that the partial derivative should converges toward 0
+            gradient = [x2-x1 for (x1,x2) in zip(new_lambda, self.weights)]
+            new_loss = abs(sum(gradient))
             old_accuracy = new_accuracy
             new_accuracy = self.accuracy(data, new_lambda)
             if trace:
+                print(f"iteration {i} : accuracy {new_accuracy}\n{' ':{13+len(str(i))}}absolute error {new_loss}")
                 acc.append(new_accuracy)
+                loss.append(new_loss)
             i += 1
 
         if trace:
-            print(f"The training consisted of {i} optimization steps in which the accuracy improved from {acc[0]} to {acc[-1]}.")
-            # If the user wants to track the training process, the accuracy scores are returned to potentially plot the improvement
-            return acc
+            print(f"The training consisted of {i-1} optimization steps in which the accuracy changed from {acc[0]} to {acc[-1]} and the error changed from {loss[0]} to {loss[-1]}.")
+            # If the user wants to track the training process, the accuracy and loss scores are returned to potentially plot the improvement
+            return acc, loss
 
   
-    def partial_derivative(self, data: list[tuple[tuple[int],str]], lambda_i: int) -> list[float]:
+    def partial_derivative(self, data: list[tuple[tuple[int],str]], lambda_i: int, clipval: int = 0) -> list[float]:
         '''
         Author: Katrin Schmidt
         Method that computes the partial derivatives of the objective function F
@@ -193,43 +194,41 @@ class MaxEnt():
                 Dataset as a list of document vector-label pairs to apply the partial dervative
                 function to for each weight λi
             lambda_i (int): Index of the weight with regard to which the derivative is currently calculated
-            
+            clipval (int): maximum value of each partial derivative used for gradient clipping in case of exploding gradients TODO:delete
         Returns:
             list[float]: Gradient  comprised of partial derivatives of the maximum entropy function F w.r.t. λi
         '''
         # The gradient is comprised of the partial derivatives with regard to each λi
         # ∂F/∂λi = ∂A/∂λi - ∂B/∂λi
-        derivative_A = 0#[0 for i in range(len(self.weights))]
-        derivative_B = 0#[0 for i in range(len(self.weights))]
+        derivative_A = 0
+        derivative_B = 0
         for (document, gold_label) in data:
             # Calculate first summand as ∂A/∂λi = Σ(y,x) fλ(y|x) 
             # or the number of correctly recognized document-label pairs
             derivative_A += self.features[lambda_i].apply(gold_label, document)
             # Calculate second summmand ∂B/∂λi as the probability of all label-doc pairs that could be recognized
-            for prime_label in self.labels:
+            '''# As the formula takes the probability of the labels instead of the label itself, get all label 
+            # probabilities for the current document
+            p_lambda = self.classify(document, in_training=True)
+            print(p_lambda)
+            for prime_label in p_lambda:
                 # probability pλ(y|x) = exp(sum(weights_for_y_given_x)) / exp(sum(weights_for_y'_given_x))
-                # ∂B/∂λi = Σ(y,x)Σy'        pλ(y'|x)                       *         fλ(y'|x)
+                # ∂B/∂λi = Σ(y,x)Σy'        pλ(y'|x)  *         fλ(y'|x)
+                derivative_B += p_lambda[prime_label] * self.features[lambda_i].apply(prime_label, document)
+            TODO:delete'''
+            for prime_label in self.labels:
+                # As f is either 0 or 1, we can replace it in the formula with an if-query to minimize the 
+                # number of unnecessary classifications during training that would be multiplied with 0:
                 if self.features[lambda_i].apply(prime_label, document):
-                    # As f is either 0 or 1, we can replace it in the formula with an if-query to minimize the 
-                    # number of unnecessary classifications during training that would be multiplied with 0
+                    # probability pλ(y|x) = exp(sum(weights_for_y_given_x)) / exp(sum(weights_for_y'_given_x))
+                    # ∂B/∂λi = Σ(y,x)Σy'        pλ(y'|x)                       *         fλ(y'|x)
                     derivative_B += self.classify(document, in_training=prime_label)
-        # calculate derivative of F
+        # calculate derivative of F wrt λi 
+        '''and clip the value if necessary to avoid exploding gradients
+        if clipval and abs( derivative_A-derivative_B ) > clipval:
+            if derivative_A-derivative_B < 0:
+                return -clipval
+            else:
+                return clipval
+                TODO:delete'''
         return derivative_A-derivative_B
-
-
-'''# calculate second summmand 'derivative_B'
-derivative_B = 0  
-
-# Iterate through all label-document combinations and add up the probabilities for the switched on pairs
-for label in self.labels:
-    for document, gold_label in data:
-        if self.features[i].apply(label, document):
-            # probability pλ(y|x) = exp(sum(weights_for_y_given_x)) / exp(sum(weights_for_y'_given_x))
-            # ∂B/∂λi = Σ(y,x)Σy'        pλ(y'|x)                       *         fλ(y'|x)
-            derivative_B += self.classify(document, in_training=label)
-            # As f is either 0 or 1, we can replace it in the formula with an if query to minimize the 
-            # number of unnecessary classifications during training
-
-# calculate derivative of F
-derivative = derivative_A - derivative_B
-return derivative  '''

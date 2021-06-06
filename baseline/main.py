@@ -9,7 +9,7 @@ path = 'C:/Users/HP Envy/Documents/Uni/Master/SS21/topics in emotion analysis/Au
 
 token_data = pickle.load(open(f'{path}tokenized_dictionary.pickle', 'rb'))
 
-def build_dataset(raw_data: dict[str], train_split: float = 0.8, min_poems: int = 30, max_author: int = None):
+def build_dataset(raw_data: dict[str], train_split: float = 0.75, min_poems: int = 30, max_author: int = None):
     """Reads a dictionary of tokenized documents sorted by author, chooses the data according to the set constrictions
     on the least number of poems per author or maximum number of poets overall and then converts the chosen data into a 
     training and test set made of bag-of-word vectors with author labels and an accompanying vocabulary dictionary.
@@ -33,15 +33,16 @@ def build_dataset(raw_data: dict[str], train_split: float = 0.8, min_poems: int 
         # so the data is split for each author individually instead of globally
         round_split = int(train_split*len(raw_data[author]))
         for i, poem in enumerate(raw_data[author]):
+            poem = [token.lower() for token in poem]
             if i < round_split:
                 # The words from the training data are used in the vocabulary
                 types = types.union(set(poem))
                 # The train set consists of pairs of a poem and corresponding author label
-                train.append((raw_data[author][i], author))
+                train.append((poem, author))
             else:
                 # The test set is build the same as the train set but its words are not taken into account
                 # for the vocabulary as they will not be used in training anyway
-                test.append((raw_data[author][i], author))
+                test.append((poem, author))
     # The dictionary to relate the indices of word vectors to word types from the data set
     vocabulary = {word: index for index, word in enumerate(sorted(types))}
     # Converting the training data from token lists into word vectors
@@ -82,17 +83,17 @@ def tok_to_vec(data: list[tuple[list[str], str]], vocabulary: dict[str]) -> list
 
 
 classifier = MaxEnt()
-train_set, test_set, vocabulary = build_dataset(token_data, max_author=20)
-classifier.learnFeatures(train_set, class_features=15, vocabulary=vocabulary)
-train_set = train_set[:100]
+train_set, test_set, vocabulary = build_dataset(token_data, max_author=30)
+#print(len(train_set))
+vocab = list(vocabulary)
+classifier.learnFeatures(train_set, class_features=30, vocabulary=vocab)
 classifier.train(train_set, trace=True)
 
-
+'''
 predicted = list()
 gold = [doc[1] for doc in test_set]
 for doc in test_set:
     predicted.append(classifier.classify(doc[0]))
 
 eva = Evaluation(gold, predicted)
-eva.f_score()
-eva.showConfusionMatrix()
+eva.fullEval()'''

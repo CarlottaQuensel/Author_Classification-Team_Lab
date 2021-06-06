@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from features import Feature
+from numpy import log
 import pickle
 
 # Set either to Kati's or Carlottas path
@@ -25,7 +26,7 @@ Function (list of labelled docs)
         b - scores above x (0.7?) but at least as in a
 """
 
-def learnFeatures(data: list[tuple[tuple[int], str]], class_features: int = 50) -> dict[dict[int]]:
+def learnFeatures(data: list[tuple[tuple[int], str]], class_features: int = 50, vocab=None) -> dict[dict[int]]:
     """Learns the most informative features (= words) for a label set from the set of respective documents.
     The function uses mutual pointwise information to compute the most relevant features for each label.
     Features can be the occurence or absence of a word in the document.
@@ -51,6 +52,7 @@ def learnFeatures(data: list[tuple[tuple[int], str]], class_features: int = 50) 
         # Only return the number of features determined by the user
         class_features = min(len(descending_scores), class_features)
         for feature in descending_scores[:class_features]:
+            #print(label, vocab[feature[0]], pmi[label][feature])
             # Save feature functions as their own class
             features.append(Feature(label, feature[0]))
     return features
@@ -72,7 +74,7 @@ def pointwiseMutualInformation(data: list[tuple[tuple[int], str]]) -> dict[dict[
 
     # As the document vectors consist of 1 and 0, summing all documents yields the 
     # number of documents each word occurs in.
-    c_words = [sum([document[0][i] for document in data]) for i in range(vocabulary)]
+    c_words = [sum([doc_vec[i] for (doc_vec,label) in data]) for i in range(vocabulary)]
     # The number of documents the words do not occur in, is the complement given the overall document count
     c_nwords = [doc_number - wordcount for wordcount in c_words]
     
@@ -81,7 +83,7 @@ def pointwiseMutualInformation(data: list[tuple[tuple[int], str]]) -> dict[dict[
     c_labels = dict()
     # and each label-word pair
     c_words_labels = dict()
-    for i, (doc, label) in enumerate(data):
+    for doc, label in data:
         # Handling the first and subsequent occurences of a label
         try:
             c_labels[label] += 1
@@ -92,7 +94,7 @@ def pointwiseMutualInformation(data: list[tuple[tuple[int], str]]) -> dict[dict[
         try:
             c_words_labels[label] = [c_words_labels[label][j] + doc[j] for j in range(vocabulary)]
         except KeyError:
-            c_words_labels[label] = doc[:]
+            c_words_labels[label] = doc
     
     # Same as the words alone, the joint probability with the labels is also computed for documents not including the words
     c_nwords_labels = dict()
@@ -113,8 +115,8 @@ def pointwiseMutualInformation(data: list[tuple[tuple[int], str]]) -> dict[dict[
         pmi[label] = dict()
         for i in range(vocabulary):
             # Scores for occurence of the word
-            pmi[label][(i, True)] = p_words_labels[label][i] / (p_words[i] * p_labels[label])
+            pmi[label][(i, True)] = log(p_words_labels[label][i] / (p_words[i] * p_labels[label]))
             # Scores for absence of the word
-            pmi[label][(i, False)] = p_nwords_labels[label][i] / (p_nwords[i] * p_labels[label])
-    # Scores are sorted by label and feature (word) and returned
+            pmi[label][(i, False)] = log(p_nwords_labels[label][i] / (p_nwords[i] * p_labels[label]))
+    # The PMI scores are ordered first by label and then by document property and returned
     return pmi
