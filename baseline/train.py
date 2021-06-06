@@ -54,7 +54,7 @@ class MaxEnt():
         self.features = learnFeatures(data, class_features, vocab=vocabulary)
 
         # Each function has a corresponding weight, so the same number of weights are randomly initialized
-        self.weights = [np.randint(-10,10) for i in range(len(self.features))]#[np.random.randint(-2,2) for i in range(len(self.features))]
+        self.weights = [np.random.randint(-10,10) for i in range(len(self.features))]#[np.random.randint(-2,2) for i in range(len(self.features))]
 
         # The classifier also has all labels of the training data saved to simplify classification
         self.labels = sorted({feature.label for feature in self.features})
