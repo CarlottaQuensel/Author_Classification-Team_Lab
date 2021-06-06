@@ -10,6 +10,7 @@ path = "C:/Users/HP Envy/Documents/Uni/Master/SS21/topics in emotion analysis/Au
 # ----------------------------------------------------
 # --------------------LOADING DATA--------------------
 # ----------------------------------------------------
+# Author: Katrin Schmidt
 # open csv file with pandas
 with open(f'{path}poetryfoundation-dataset.csv', encoding="utf-8") as file:
     data_frame = pandas.read_csv(file)
@@ -33,6 +34,7 @@ with open(f'{path}poetryfoundation-dataset.csv', encoding="utf-8") as file:
 # ----------------------------------------------------
 # --------------------TOKENIZATION--------------------
 # ----------------------------------------------------
+# Author: Katrin Schmidt
 # tokenizing the data with nltk
 tokenize_punctuation = WordPunctTokenizer()
 tokenized_dictionary = {}

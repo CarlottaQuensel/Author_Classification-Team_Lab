@@ -16,7 +16,9 @@ class Evaluation():
     f_scores = dict()
 
     def __init__(self, gold_labels: list[str], predicted_labels: list[str]):
-        """Initialize evaluation with the gold labels and the predictions to be evaluated.
+        """
+        Author: Katrin Schmidt
+        Initialize evaluation with the gold labels and the predictions to be evaluated.
 
         Args:
             gold_labels (list(str)): 
@@ -64,7 +66,9 @@ class Evaluation():
 
     
     def setConfusionMatrix(self, gold_labels=None, predicted_labels=None):
-        """Generate a confusion matrix as a contingency table between predicted and gold labels.
+        """
+        Author: Carlotta Quensel
+        Generate a confusion matrix as a contingency table between predicted and gold labels.
 
         Args:
             gold_output (list(list(int)), optional): 
@@ -92,7 +96,9 @@ class Evaluation():
 
 
     def precision(self, label: str = None, full_eva: bool = False) -> list[float]:
-        """Compute precision for one or all labels as the ratio of predicted labels that are true
+        """
+        Author: Katrin Schmidt
+        Compute precision for one or all labels as the ratio of predicted labels that are true
 
         Args:
             label (string, optional): 
@@ -156,7 +162,9 @@ class Evaluation():
 
     
     def recall(self, label=None, full_eva: bool = False) -> list[float]:
-        """Compute the recall for one or all labels as the ratio of gold labels that are predicted and show the scores.
+        """
+        Author: Katrin Schmidt
+        Compute the recall for one or all labels as the ratio of gold labels that are predicted and show the scores.
 
         Args:
             label (string, optional): 
@@ -220,7 +228,10 @@ class Evaluation():
     
 
     def f_score(self, label: str = None, beta: int = 1, full_eva: bool = False) -> list[float]:
-        """Compute and show the f score as a combination of precision and recall. Per default, their harmonic mean is computed.
+        """
+        Author: Katrin Schmidt (computation)
+                Carlotta Quensel (printing output)
+        Compute and show the f score as a combination of precision and recall. Per default, their harmonic mean is computed.
 
         Args:
             label (str, optional): 
@@ -307,6 +318,18 @@ class Evaluation():
             return f_scores
 
     def showConfusionMatrix(self, full_eva: bool = False) -> dict[dict[int]]:
+        """
+        Author: Carlotta Quensel
+        Shows the contingencies between the gold and predicted labels as a table.
+
+        Args:
+            full_eva (bool, optional): 
+                If the f-score is computed as part of a full evaluation, the results are shown with this
+                full evaluation and not immediately after computation. Defaults to False.
+
+        Returns:
+            dict[dict[int]]: [description]
+        """
         if not self.confusionMatrix:
             print("There are no labels to compute a confusion matrix from, use set_predictions first")
             return None
@@ -346,18 +369,6 @@ class Evaluation():
                 cm_print += f"{self.confusionMatrix[gold_index][predicted_index]:<3}|"
             # Each row is followed by a horizontal line in the table
             cm_print += "\n" + hlines
-        '''for i, row_label in enumerate(self.labels):
-            # Initializing the predictions for the current gold label
-            cm[row_label] = dict()
-            # Adding the row title to the output string
-            row_string = f"{row_label:<{max_label}}|"
-            for j, col_label in enumerate(self.labels):
-                # Adding the number of times, the gold row label was predicted as the current column label
-                cm[row_label][col_label] = self.confusionMatrix[i][j]
-                # Adding the number as a cell of the printed table
-                row_string += f"{self.confusionMatrix[i][j]:<{len(col_label)}}|"
-            # Adding the whole formated row and a horizontal line to the printed table
-            cm_print += row_string + "\n" + hlines + "\n"'''
         
         # After the whole matrix is traversed, it is printed in a readable format and returned as an interpretable dictionary with the respective labels
         # If the confusion matrix is shown as part of a full evaluation, the string of the table is returned to the fullEval function to be printed 
@@ -370,7 +381,9 @@ class Evaluation():
 
 
     def fullEval(self) -> dict[dict[int]]:
-        """Perform a full evaluation comprised of the Precision, Recall and F1-score for each author and a confusion matrix.
+        """
+        Author: Carlotta Quensel
+        Perform a full evaluation comprised of the Precision, Recall and F1-score for each author and a confusion matrix.
 
         Returns:
             dict[dict[int]]: 
