@@ -1,3 +1,12 @@
+ZUM UPLOAD ALS ZIP
+- evaluation.py
+- features/learnFeatures.py
+- main/train.py
+- poetryfoundation_tokenizer.py
+- poetryfoundation-dataset.csv
+- tokenized_dictionary.pickle
+
+
 class Feature: Feature.label = Shakespeare, Feature.property(20,True)
   property label
   property property
