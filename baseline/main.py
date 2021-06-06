@@ -1,5 +1,5 @@
 from train import MaxEnt
-from Evaluation import Evaluation
+from evaluation import Evaluation
 import pickle
 
 # Set to either Kati's or Carlotta's file path
