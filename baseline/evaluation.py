@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# Author: Carlotta Quensel
 
 class Evaluation():
     """Evaluation for a trained multi-class single-label classifier.
@@ -7,7 +8,8 @@ class Evaluation():
     recall - compute the recall for every or a specific label
     precision - compute the precision for every or a specific label
     f1_score - compute the balanced f-score (alpha=0.5) from recall and precision
-    confusion_matrix - erroneous classification as contingency table between gold and predicted labels
+    showConfusionMatrix - erroneous classification as contingency table between gold and predicted labels
+    fullEval - compute and show all evaluation measures and the confusion matrix for any given data set
     """
     precision_scores = dict()
     recall_scores = dict()
@@ -62,7 +64,7 @@ class Evaluation():
 
     
     def setConfusionMatrix(self, gold_labels=None, predicted_labels=None):
-        """Generate confusion matrix as a contingency table between predicted and gold labels.
+        """Generate a confusion matrix as a contingency table between predicted and gold labels.
 
         Args:
             gold_output (list(list(int)), optional): 

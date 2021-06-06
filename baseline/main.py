@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# Author: Carlotta Quensel
 from train import MaxEnt
 from evaluation import Evaluation
 import pickle
@@ -84,16 +86,14 @@ def tok_to_vec(data: list[tuple[list[str], str]], vocabulary: dict[str]) -> list
 
 classifier = MaxEnt()
 train_set, test_set, vocabulary = build_dataset(token_data, max_author=30)
-#print(len(train_set))
 vocab = list(vocabulary)
 classifier.learnFeatures(train_set, class_features=30, vocabulary=vocab)
 classifier.train(train_set, trace=True)
 
-'''
 predicted = list()
 gold = [doc[1] for doc in test_set]
 for doc in test_set:
     predicted.append(classifier.classify(doc[0]))
 
 eva = Evaluation(gold, predicted)
-eva.fullEval()'''
+eva.fullEval()

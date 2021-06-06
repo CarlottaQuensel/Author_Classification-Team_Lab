@@ -3,21 +3,18 @@ from features import Feature
 from learnFeatures import *
 #from baseline.learnFeatures import pointwiseMutualInformation
 import numpy as np
-
-'''
-after learning x numbers of features, 
-initialize x numbers of weights
-'''
+#import random
 
 class MaxEnt():
     '''
-    1. Initialize random weights between -2 and +2 (= lambda)
+    Author: Katrin Schmidt
+    1. Initialize random weights between -10 and +10 (= lambda)
     2. Calculate accuracy of application of these lambdas
     3. Improve accuracy by calculation the derivation and adjusting the lambdas
     4. Return best lambdas for each feature
     '''
 
-    # Initialize a list of random weights
+    # Initialize a list of features and corresponding weights
     weights = list()
     features = list()
 
@@ -39,7 +36,7 @@ class MaxEnt():
 
     def learnFeatures(self, data: list[tuple[tuple[int], str]], class_features: int=50, vocabulary: dict[str] = None) -> None:
         """
-        Author: Carlotta Quensel
+        Author: Carlotta Quensel (see module learnFeatures.py)
         Compute the best features for the classifier based on pointwise mutual information between classes and document features
         in a dataset and save them in a list with a matching list of (untrained) weights. The features are saved as functions for 
         the Max Ent classification and have an associated label and a document property as a number, e.g.
@@ -57,7 +54,7 @@ class MaxEnt():
         self.features = learnFeatures(data, class_features, vocab=vocabulary)
 
         # Each function has a corresponding weight, so the same number of weights are randomly initialized
-        self.weights = [0.1 for i in range(len(self.features))]#[np.random.randint(-2,2) for i in range(len(self.features))]
+        self.weights = [np.randint(-10,10) for i in range(len(self.features))]#[np.random.randint(-2,2) for i in range(len(self.features))]
 
         # The classifier also has all labels of the training data saved to simplify classification
         self.labels = sorted({feature.label for feature in self.features})
@@ -134,7 +131,8 @@ class MaxEnt():
 
     def train(self, data: list[tuple[tuple[int], str]], min_improvement: float = 0.001, trace: bool = False):
         ''' 
-        Author: Katrin Schmidt, trace and accuracy Carlotta Quensel
+        Author: Katrin Schmidt (main),  
+                Carlotta Quensel (trace, loss and accuracy)
         Method that trains the model via multivariable linear optimization.
         Since the optimization for the lambda vector needs to happen simultaneous, 
         the iterations stop after it counts 100 (instead of a specific value).
@@ -145,34 +143,34 @@ class MaxEnt():
             min_improvement (float, optional): The minimum accuracy improvement needed for a new iteration of optimization. Defaults to 0.0001
             trace (boolean, optional): Switch on to track the development of the accuracy during the iterative process.
         '''
-        # Training as an optimization process for the weights until the improvement drops below a threshold (currently at least 0.1% improvement)
         
-        # compute old accuracy with random weights
+        # To check the improvement during training, first compute old accuracy with random weights
+        # and keep track of the overall loss (sum of the gradient)
         old_accuracy = 0
-        old_loss = 10000
-        new_loss = 0
         loss = list()
         new_accuracy = self.accuracy(data)
         if trace:
-            print(f"Accuracy without weights: {new_accuracy}.")
+            print(f"Accuracy with random weights: {new_accuracy}.")
             acc = [new_accuracy]
         new_lambda = list()
 
         i = 1
-        while new_accuracy - old_accuracy >= min_improvement or old_loss-new_loss >= min_improvement:
+        # Training as an optimization process for the weights until the improvement drops below a 
+        # threshold (currently at least 0.1% improvement in accuracy)
+        while new_accuracy - old_accuracy >= min_improvement:
             # Don't reassign the new weights in the first step (no new weights yet)
             if len(new_lambda):
                 self.weights = new_lambda
-            # Perform stochastic gradient assent by iterating over features and computing the partial_derivative
-            # and save the updated weights temporarily to first make sure that they improve the classifier
+            # Perform stochastic gradient ascent by iterating over features and computing the partial_derivative
+            # and save the updated weights temporarily to first make sure that they improve the classifier.
             new_lambda = [self.weights[i] + self.partial_derivative(data, lambda_i=i) for i in range(len(self.features))]
-            # Calculate the improvement of accuracy and check that the partial derivative should converges toward 0
-            gradient = [x2-x1 for (x1,x2) in zip(new_lambda, self.weights)]
-            new_loss = abs(sum(gradient))
+            # Update the accuracy and partial derivative or loss to check that both improve (acc -> 1, loss -> 0).
+            new_loss = abs(sum([x2-x1 for (x1,x2) in zip(new_lambda, self.weights)]))
             old_accuracy = new_accuracy
             new_accuracy = self.accuracy(data, new_lambda)
+            # To track the training progress, the user is shown the accuracy and loss for each optimization step
             if trace:
-                print(f"iteration {i} : accuracy {new_accuracy}\n{' ':{13+len(str(i))}}absolute error {new_loss}")
+                print(f"iteration {i:2} : accuracy {new_accuracy}\n{' ':16}loss {new_loss}")
                 acc.append(new_accuracy)
                 loss.append(new_loss)
             i += 1
@@ -183,7 +181,7 @@ class MaxEnt():
             return acc, loss
 
   
-    def partial_derivative(self, data: list[tuple[tuple[int],str]], lambda_i: int, clipval: int = 0) -> list[float]:
+    def partial_derivative(self, data: list[tuple[tuple[int],str]], lambda_i: int) -> list[float]:
         '''
         Author: Katrin Schmidt
         Method that computes the partial derivatives of the objective function F
@@ -194,7 +192,6 @@ class MaxEnt():
                 Dataset as a list of document vector-label pairs to apply the partial dervative
                 function to for each weight λi
             lambda_i (int): Index of the weight with regard to which the derivative is currently calculated
-            clipval (int): maximum value of each partial derivative used for gradient clipping in case of exploding gradients TODO:delete
         Returns:
             list[float]: Gradient  comprised of partial derivatives of the maximum entropy function F w.r.t. λi
         '''
@@ -207,15 +204,6 @@ class MaxEnt():
             # or the number of correctly recognized document-label pairs
             derivative_A += self.features[lambda_i].apply(gold_label, document)
             # Calculate second summmand ∂B/∂λi as the probability of all label-doc pairs that could be recognized
-            '''# As the formula takes the probability of the labels instead of the label itself, get all label 
-            # probabilities for the current document
-            p_lambda = self.classify(document, in_training=True)
-            print(p_lambda)
-            for prime_label in p_lambda:
-                # probability pλ(y|x) = exp(sum(weights_for_y_given_x)) / exp(sum(weights_for_y'_given_x))
-                # ∂B/∂λi = Σ(y,x)Σy'        pλ(y'|x)  *         fλ(y'|x)
-                derivative_B += p_lambda[prime_label] * self.features[lambda_i].apply(prime_label, document)
-            TODO:delete'''
             for prime_label in self.labels:
                 # As f is either 0 or 1, we can replace it in the formula with an if-query to minimize the 
                 # number of unnecessary classifications during training that would be multiplied with 0:
@@ -223,12 +211,5 @@ class MaxEnt():
                     # probability pλ(y|x) = exp(sum(weights_for_y_given_x)) / exp(sum(weights_for_y'_given_x))
                     # ∂B/∂λi = Σ(y,x)Σy'        pλ(y'|x)                       *         fλ(y'|x)
                     derivative_B += self.classify(document, in_training=prime_label)
-        # calculate derivative of F wrt λi 
-        '''and clip the value if necessary to avoid exploding gradients
-        if clipval and abs( derivative_A-derivative_B ) > clipval:
-            if derivative_A-derivative_B < 0:
-                return -clipval
-            else:
-                return clipval
-                TODO:delete'''
+        # calculate derivative of F wrt λi
         return derivative_A-derivative_B
