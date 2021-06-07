@@ -187,7 +187,8 @@ class MaxEnt():
             print(f"Accuracy with random weights: {new_accuracy}.")
             acc = [new_accuracy]
         new_lambda = list()
-
+        
+        # Set control variable i to 1 to keep track of the optimization steps
         i = 1
 
         # Optimize the weights until the improvement drops below a
