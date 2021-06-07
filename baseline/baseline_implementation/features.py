@@ -7,10 +7,10 @@ class Feature():
     label = str()
     property = int()
 
-
     def __init__(self, label: str, doc_property: int) -> None:
         """Initialization of a maximum entropy feature.
-        A MaxEnt feature is a binary function that where a document either has a property related to a label or not.
+        A MaxEnt feature is a binary function that where a document either has
+        a property related to a label or not.
 
         Args:
             label (str): The label whose weight the function switches on or off.
@@ -19,28 +19,34 @@ class Feature():
         self.label = label
         self.property = doc_property
 
-
     def apply(self, current_label: str, doc: list[int]) -> int:
-        """Compares a maximum entropy feature to a current document and label, to decide if the MaxEnt classifier
-        will apply the feature and thus include a weight for this instance (1) or not (0).
+        """Compares a maximum entropy feature to a current document and label,
+        to decide if the MaxEnt classifier will apply the feature and thus
+        include a weight for this instance (1) or not (0).
 
         Args:
             current_label (str): The label whose probability the classifier should compute.
-            doc (list[int]): The document instance currently being classified, as a bag-of-words feature vector.
+            doc (list[int]): The document instance currently being classified,
+            as a bag-of-words feature vector.
 
         Returns:
-            1: If the feature can be applied to the document and the label matches with the probability currently computed.
-            0: If the document doesn't match the property the feature needs or another label is currently considered.
+            1:  If the feature can be applied to the document and the label
+                matches with the probability currently computed.
+            0:  If the document doesn't match the property the feature needs
+                or another label is currently considered.
         """
-        # The function calls for the label to match the function and for the document to include a word or property.
+        # The function calls for the label to match the function and
+        # for the document to include a word or property.
         switch = (self.label == current_label and doc[self.property])
-        # The boolean on/off-switch is converted to a number to be multiplied with the weight
+        # The boolean on/off-switch is converted to a number
+        # to be multiplied with the weight
         return int(switch)
 
 
 def learnFeatures(data: list[tuple[tuple[int], str]], class_features: int = 50, vocab=None) -> dict[dict[int]]:
-    """Learns the most informative features (= words) for a label set from the set of respective documents.
-    The function uses mutual pointwise information to compute the most relevant features for each label.
+    """Learns the most informative features (= words) for a label set from the
+    set of respective documents. The function uses mutual pointwise information
+    to compute the most relevant features for each label.
     Features can be the occurence or absence of a word in the document.
 
     Args:
@@ -53,26 +59,26 @@ def learnFeatures(data: list[tuple[tuple[int], str]], class_features: int = 50, 
     Returns:
         dict[dict[int]]: document features sorted by label and in descending order by PMI score
     """
-    
+
     pmi = pointwiseMutualInformation(data)
     # Sort PMI scores by relevance to find the most informative features
     features = list()
     for label in pmi:
         # First sort the document properties according to their PMI score
-        descending_scores = sorted([property for property in pmi[label]], reverse=True, key = lambda x: pmi[label][x])
+        descending_scores = sorted([property for property in pmi[label]], reverse=True, key=lambda x: pmi[label][x])
         # Then reassign the scores to the properties in the right order
         # Only return the number of features determined by the user
         class_features = min(len(descending_scores), class_features)
         for feature in descending_scores[:class_features]:
-            #print(label, vocab[feature[0]], pmi[label][feature])
+            # print(label, vocab[feature[0]], pmi[label][feature])
             # Save feature functions as their own class
             features.append(Feature(label, feature[0]))
     return features
 
 
 def pointwiseMutualInformation(data: list[tuple[tuple[int], str]]) -> dict[dict[int]]:
-    """Takes data points (document vectors) and their labels and computes the pointwise mutual information for 
-    each combination of feature and label.
+    """Takes data points (document vectors) and their labels and computes
+    the pointwise mutual information for each combination of feature and label.
 
     Args:
         data (list[int]): Documents given as word vectors with 1/included and 0/absent words as elements
@@ -84,12 +90,12 @@ def pointwiseMutualInformation(data: list[tuple[tuple[int], str]]) -> dict[dict[
     doc_number = len(data)
     vocabulary = len(data[0][0])
 
-    # As the document vectors consist of 1 and 0, summing all documents yields the 
+    # As the document vectors consist of 1 and 0, summing all documents yields the
     # number of documents each word occurs in.
-    c_words = [sum([doc_vec[i] for (doc_vec,label) in data]) for i in range(vocabulary)]
-    # The number of documents the words do not occur in, is the complement given the overall document count
+    c_words = [sum([doc_vec[i] for (doc_vec, label) in data]) for i in range(vocabulary)]
+    # The number of documents the words do not occur in, is the complement
+    # given the overall document count
     c_nwords = [doc_number - wordcount for wordcount in c_words]
-    
 
     # Counting the frequency of each label
     c_labels = dict()
@@ -102,16 +108,18 @@ def pointwiseMutualInformation(data: list[tuple[tuple[int], str]]) -> dict[dict[
         except KeyError:
             c_labels[label] = 1
 
-        # The frequency of label-word pairs can be computed as a vector sum of document vectors which have the label
+        # The frequency of label-word pairs can be computed as a vector sum
+        # of document vectors which have the label
         try:
             c_words_labels[label] = [c_words_labels[label][j] + doc[j] for j in range(vocabulary)]
         except KeyError:
             c_words_labels[label] = doc
-    
-    # Same as the words alone, the joint probability with the labels is also computed for documents not including the words
+
+    # Same as the words alone, the joint probability with the labels is also
+    # computed for documents not including the words
     c_nwords_labels = dict()
     for label in c_words_labels:
-        # These counts are the complement of the documents 
+        # These counts are the complement of the documents
         c_nwords_labels[label] = [c_labels[label] - c_words_labels[label][i] for i in range(vocabulary)]
 
     # Convert frequencies/counts into relative frequencies/probabilities for all counts
@@ -121,7 +129,8 @@ def pointwiseMutualInformation(data: list[tuple[tuple[int], str]]) -> dict[dict[
     p_words_labels = {label: [c_words_labels[label][i]/doc_number for i in range(vocabulary)] for label in c_words_labels}
     p_nwords_labels = {label: [c_nwords_labels[label][i]/doc_number for i in range(vocabulary)] for label in c_nwords_labels}
 
-    # Compute pointwise mutual information as p(w,l)/(p(w)*p(l)) with w=word, l=label
+    # Compute pointwise mutual information as p(w,l)/(p(w)*p(l))
+    # with w=word, l=label
     pmi = dict()
     for label in p_labels:
         pmi[label] = dict()
