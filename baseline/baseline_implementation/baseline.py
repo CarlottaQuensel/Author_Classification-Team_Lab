@@ -31,7 +31,7 @@ class MaxEnt():
             else:
                 self.learnFeatures(data)
 
-    def learnFeatures(self, data: list[tuple[tuple[int], str]], class_features: int=50, vocabulary: dict[str] = None) -> None:
+    def learnFeatures(self, data: list[tuple[tuple[int], str]], class_features: int=50, vocabulary: list[str] = None) -> None:
         """
         Author: Carlotta Quensel (see module learnFeatures.py)
         Compute the best features for the classifier based on pointwise mutual information between classes and document features
@@ -42,7 +42,7 @@ class MaxEnt():
         Args:
             data (list[tuple[tuple[int], str]]): Dataset consisting of a list of document-label pairs, where the documents are word vectors
             class_features (int): The maximum number of features learned per class, default 50
-            vocabulary (dict[str]): The assignment of words to word vector indices used in the given data set
+            vocabulary (list[str]): The assignment of words to word vector indices used in the given data set
         """
         if vocabulary:
             self.vocabulary = vocabulary

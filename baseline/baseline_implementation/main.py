@@ -48,7 +48,7 @@ def build_dataset(raw_data: dict[str], train_split: float = 0.75, min_poems: int
     train = tok_to_vec(train, vocabulary)
     test = tok_to_vec(test, vocabulary)
     
-    return train, test, vocabulary
+    return train, test
 
 
 def tok_to_vec(data: list[tuple[list[str], str]], vocabulary: dict[str]) -> list[tuple[list[int], str]]:
@@ -82,10 +82,9 @@ def tok_to_vec(data: list[tuple[list[str], str]], vocabulary: dict[str]) -> list
 
 
 classifier = MaxEnt()
-train_set, test_set, vocabulary = build_dataset(token_data, max_author=30)
-print(len(train_set), len(test_set))
-vocab = list(vocabulary)
-classifier.learnFeatures(train_set, class_features=30, vocabulary=vocab)
+train_set, test_set = build_dataset(token_data, max_author=30)
+
+classifier.learnFeatures(train_set, class_features=30)
 classifier.train(train_set, trace=True)
 
 predicted = list()

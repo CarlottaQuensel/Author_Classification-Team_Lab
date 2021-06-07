@@ -38,14 +38,16 @@ class Feature():
         return int(switch)
 
 
-def learnFeatures(data: list[tuple[tuple[int], str]], class_features: int = 50, vocab=None) -> dict[dict[int]]:
+def learnFeatures(data: list[tuple[tuple[int], str]], class_features: int = 50, vocab: list[str]=None) -> dict[dict[int]]:
     """Learns the most informative features (= words) for a label set from the set of respective documents.
     The function uses mutual pointwise information to compute the most relevant features for each label.
     Features can be the occurence or absence of a word in the document.
 
     Args:
         data (list[int]): The set of documents given as word vectors consisting of 1's and 0's.
-        labels (list[str]): The respective labels in the same order as the documents.
+        class_features (int, optional): The number of features learned for each class (author). Defaults to 50.
+        vocab (list[str], optional): A list of words that can be used to show which words are learned to make the 
+            word vectors more explainable by showing the vocabulary
 
     Raises:
         IndexError: The labels belong to the documents, thus their number should match up
