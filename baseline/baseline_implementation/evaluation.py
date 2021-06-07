@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# Author: Carlotta Quensel
 
 
 class Evaluation():
@@ -50,7 +49,9 @@ class Evaluation():
         self.confusionMatrix = self.setConfusionMatrix()
 
     def set_predictions(self, gold_labels, predicted_labels):
-        """Set gold and predicted labels for new data.
+        """
+        Author: Carlotta Quensel
+        Set gold and predicted labels for new data.
 
         Args:
             gold_labels (list(str)):

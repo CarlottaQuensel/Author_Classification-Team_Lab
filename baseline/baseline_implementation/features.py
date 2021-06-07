@@ -84,7 +84,6 @@ def pointwiseMutualInformation(data: list[tuple[tuple[int], str]]) -> dict[dict[
 
     Args:
         data (list[int]): Documents given as word vectors with 1/included and 0/absent words as elements
-        labels (list[str]): The respective labels for the documents
 
     Returns:
         dict[dict[int]]: PMI scores sorted by label and feature
