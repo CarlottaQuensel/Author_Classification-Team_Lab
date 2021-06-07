@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: Carlotta Quensel
-from train import MaxEnt
+from baseline import MaxEnt
 from evaluation import Evaluation
 import pickle
 
