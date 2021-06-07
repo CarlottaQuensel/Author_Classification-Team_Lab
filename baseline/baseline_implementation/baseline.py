@@ -35,7 +35,7 @@ class MaxEnt():
 
     def learnFeatures(self, data: list[tuple[tuple[int], str]], class_features: int=50, vocabulary: list[str] = None) -> None:
         """
-        Author: Carlotta Quensel (see module learnFeatures.py)
+        Author: Carlotta Quensel (see module features.py)
         Compute the best features for the classifier based on pmi between
         classes and document features in a dataset and save them in a list with
         a matching list of (untrained) weights. The features are saved as
