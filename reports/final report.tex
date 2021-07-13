@@ -41,8 +41,13 @@ of your task, research questions/hypothesis
 
 Description of your method (e.g. perceptron) without talking about the specific task too much. Explain features used (with or without being task specific), but do not judge them.
 \begin{itemize}
-\item Maximum Entropy classifier (explain why not other approaches)
-\item Features: MaxEnt/Bag-of-Words(/poetry specific?)
+\item Maximum Entropy classifier (explain why not other approaches)\\
+      - short program description (training, classification)
+\item Features: MaxEnt/Bag-of-Words(/poetry specific?), learnFeatures (PMI)
+\item subsection with data/corpus creation from Poetry Foundation\\
+      - which information is included\\
+      - preprocessing steps (tokenizing)\\
+      - statistics (number of poems/poets/poems per poet with graph)
 \end{itemize}
 
 \section{Experiments}
@@ -51,14 +56,14 @@ Description of your method (e.g. perceptron) without talking about the specific 
 
 Explain how you perform your experiments, which data is used, statistics of data.
 \begin{itemize}
-\item Poetry Foundation data (statistics)
+\item data statistics (decision for number of authors as hyperparameter)
 \item Train/Test split
-\item Baseline (Bag of words)\\- learnFeatures (PMI), training (accuracy threshold, track loss \& accuracy), classification\\- Hyperparameters (\#{}authors, \#{}features/author)
-\item Advanced: \#{}verses, \#{}stanzas, rhyme scheme
+\item Program:\\
+- Hyperparameters: accuracy threshold, track loss \& accuracy, \#{}features/author
+\item Baseline (bag of words), Advanced: \#{}verses, \#{}stanzas, rhyme scheme
 \end{itemize}
 
 \subsection{Results}
-
 Explain how your model performs, different models or configurations of your models.
 \begin{itemize}
 \item Feature combinations: baseline=BoW, advanced=all, other=?
