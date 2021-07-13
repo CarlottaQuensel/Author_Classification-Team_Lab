@@ -23,33 +23,61 @@ Same structure as the whole paper, but in short
 \end{abstract}
 
 \section{Introduction}
-
 Short motivation and explanation of relevancy
 of your task, research questions/hypothesis
+\begin{itemize}
+\item what is author classification
+\item why poetry
+\item research question
+\begin{itemize}
+\item Goal: find features inherent to poetry\\- is our goal possible\\- which features are good
+\item Problem: style features might depend on medium (e.g. Limmerick) more than on the author
+\end{itemize}
+\item Motivation: ??
+\end{itemize}
 
 
 \section{Method}
 
 Description of your method (e.g. perceptron) without talking about the specific task too much. Explain features used (with or without being task specific), but do not judge them.
+\begin{itemize}
+\item Maximum Entropy classifier (explain why not other approaches)
+\item Features: MaxEnt/Bag-of-Words(/poetry specific?)
+\end{itemize}
 
 \section{Experiments}
 
 \subsection{Experimental Design}
 
 Explain how you perform your experiments, which data is used, statistics of data.
+\begin{itemize}
+\item Poetry Foundation data (statistics)
+\item Train/Test split
+\item Baseline (Bag of words)\\- learnFeatures (PMI), training (accuracy threshold, track loss \& accuracy), classification\\- Hyperparameters (\#{}authors, \#{}features/author)
+\item Advanced: \#{}verses, \#{}stanzas, rhyme scheme
+\end{itemize}
 
 \subsection{Results}
 
 Explain how your model performs, different models or configurations of your models.
+\begin{itemize}
+\item Feature combinations: baseline=BoW, advanced=all, other=?
+\item recall/precision/f$_1$ for all combinations (table)
+\end{itemize}
 
 \subsection{Error Analysis}
 
 Given the configurations in the Results section, what are frequent sources of errors
+\begin{itemize}
+\item specifics and numbers about errors?
+\item overprediction of alphabetically first author
+\item many authors not predicted (uneven data distribution or bad features)
+\item feature weights converge similarly (no real weighting)
+\end{itemize}
 
 \section{Summary \& Conclusion}
 
-Explain and summarize your
-results on a more abstract level. What is good, what is not so
+Explain and summarize your results on a more abstract level. What is good, what is not so
 good. What are the main contributions in your experiments?
 
 
@@ -57,6 +85,12 @@ good. What are the main contributions in your experiments?
 
 What did you have in mind what else your
 would have liked to experiment with? Other ideas?
+\begin{itemize}
+\item other models (e.g. Neural Net)
+\item other features (Topics from Poetry Foundation website)
+\item feature interdependencies/more data analysis
+\item genre interaction with author classification (multitask learning?)
+\end{itemize}
 
 
 % custom entries
