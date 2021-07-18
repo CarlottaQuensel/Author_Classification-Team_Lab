@@ -17,9 +17,9 @@ To predict the authors, we built a maximum entropy classifier from scratch that 
 - [x] Implementing the baseline classifier from scratch
 - [x] Laying out the advanced method
 - [ ] Implementing the advanced features (verse/stanza number and rhyme scheme)
-      * Extracting the features from the poems
-      * Adapting pointwise mutual information for features
+     * Extracting the features from the poems
+     * Adapting pointwise mutual information for features
 - [ ] Fitting the advanced features into the baseline
-      * adapt feature class to apply features with different data types
+     * adapt feature class to apply features with different data types
 - [ ] Testing different feature combinations
 - [ ] Evaluate and report
