@@ -80,6 +80,7 @@ than four lines (\textit{\textbf{a}bcd\textbf{a}}), this is highly unlikely with
 rhyme or another rhyme pair in the lines in between 1 and 5. The scheme was constructed by consecutively taking 
 the last word of the first unmatched line and checking all other unmatched lines for rhymes with 
 \texttt{pronouncing.rhymes(word)} (\textcolor{red}{Parrish, 2015}). This lead to a four letter string for each poem of the form:
+%Besser als regulärer Ausdruck
 \[``a\{a,b\}\{a,b,c\},\{a,b,c,d\}"\]
 The number of verses per poem were sorted in \textcolor{red}{x-line steps} after looking at the distribution
 in the training data. The steps were converted into bins of  at least and at most $x$ number of verses. 
