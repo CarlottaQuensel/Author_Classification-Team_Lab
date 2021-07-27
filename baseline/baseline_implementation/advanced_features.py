@@ -72,6 +72,9 @@ def learnFeatures(data: list[tuple[tuple[int], str]], class_features: int = 50, 
     """
 
     pmi = pointwiseMutualInformation(data)
+    bow_pmi = 0 #TODO
+    verses_features = 0 # TODO Katis Funktion
+    rhyme_pmi = 0 # TODO
     # Sort PMI scores by relevance to find the most informative features
     features = list()
     for label in pmi:
@@ -83,7 +86,8 @@ def learnFeatures(data: list[tuple[tuple[int], str]], class_features: int = 50, 
         for feature in descending_scores[:class_features]:
             # print(label, vocab[feature[0]], pmi[label][feature])
             # Save feature functions as their own class
-            features.append(Feature(label, feature[0]))
+            features.append(Feature(label, feature[0])) #TODO , form="bow"))
+            #features.append(Feature(label, feature[0], form="verses"))
     return features
 
 

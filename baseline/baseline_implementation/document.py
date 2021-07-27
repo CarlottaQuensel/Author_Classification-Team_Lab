@@ -10,6 +10,9 @@ class Poem():
     def __init__(self, poem: str, vocab: dict[str]):
         self.raw = poem
         tokenizer = WordPunctTokenizer()
+        # TODO: statt self.verses = Liste besser self.getVerses() mit Implementierung von Kati
+        # entweder self.verses = ["verse1", "verse2", "verse3"] oder [[verse1_toks], [verse2_toks]]
+        # vielleicht: self.verses UND self.versecount beides mit getVerses()
         lines = poem.splitlines()
         self.verses = [[word.lower() for word in tokenizer.tokenize(lines[i].strip())] for i in range(len(lines))]
         self.tokens = self.verses[0]
