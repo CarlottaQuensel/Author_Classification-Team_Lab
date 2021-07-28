@@ -47,8 +47,8 @@ class Feature():
             switch = (self.label ==
                       current_label and doc.vector[self.property])
         elif self.form == "verse":
-            switch = (self.label == current_label and len(
-                doc.verses) <= self.property)
+            switch = (self.label == current_label and self.property[0] <
+                doc.verse_count <= self.property[1])
         # The boolean on/off-switch is converted to a number
         # to be multiplied with the weight
         return int(switch)
@@ -68,10 +68,13 @@ def learnFeatures(data: list[tuple[Poem, str]], class_features: int = 50) -> lis
             the form of the property (bag of words, verse number or rhyme scheme)
     """
 
-    verses_features = 0  # TODO Katis Funktion
+    verse = averageVerseLength(data)  # TODO Katis Funktion
+    features = list()
+    for bin in verse:
+        for author in verse[bin]:
+            features.append(Feature(label=author, form="verse", doc_property=bin))
     bow, rhyme = pmi(data)
     # Sort PMI scores by relevance to find the most informative features
-    features = list()
     for author in bow:
         # First sort the word indices and rhyme schemes by the decending value of their PMI score
         # The absolute is used for sorting to allow for features with negative weights (unlikely author-word combinations)
@@ -81,7 +84,7 @@ def learnFeatures(data: list[tuple[Poem, str]], class_features: int = 50) -> lis
         # Instantiate one less feature than wanted by the author with the learned word indices and rhyme schemes
         # (as there are only 24 possible rhyme schemes, but as many words as the size of the vocabulary,
         # the split might not be even)
-        # (the last feature is the average verse number that is calculated without PMI)
+        # (the last feature for each author is the average verse number already calculated)
         for feature in descending_pmi[:class_features-1]:
             # print(label, vocab[feature[0]], pmi[label][feature])
             # return Max Ent functions as a list of Feature class objects (description above)
@@ -171,3 +174,7 @@ def pmi(data: list[tuple[Poem, str]]) -> tuple[dict[dict[int]], dict[dict[str]]]
                 rhyme_pmi[author][scheme] = log(0)
     # The two property's PMI scores are given to the feature learning function
     return bow_pmi, rhyme_pmi
+
+def averageVerseLength(data):
+    # TODO: Katis Funktion aus main.py
+    return dict()
