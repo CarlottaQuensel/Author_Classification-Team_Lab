@@ -9,14 +9,22 @@ class Poem():
 
     def __init__(self, poem: str, vocab: dict[str]):
         self.raw = poem
+        self.getVerses()
+        self.getRhymes()
+        self.getVector(vocab)
+    
+
+    def getVerses(self):
+        lines = self.raw.splitlines()
+
+        # Count number of verses
+        self.verse_count = len(lines)
+
         tokenizer = WordPunctTokenizer()
-        self.verses = [line.lower() for line in poem.splitlines()]
-        self.verses = [tokenizer.tokenize(line.strip()) for line in self.verses]
+        self.verses = [[word.lower() for word in tokenizer.tokenize(lines[i].strip())] for i in range(len(lines))]
         self.tokens = self.verses[0][:]
         for i in range(1,len(self.verses)):
             self.tokens.extend(self.verses[i])
-        self.getRhymes()
-        self.getVector(vocab)
     
     def getRhymes(self):
         punctuation = "[^0-9A-Za-z]"
