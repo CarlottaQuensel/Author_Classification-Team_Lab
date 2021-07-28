@@ -159,7 +159,7 @@ def set_bins(self, average_verse_count: dict[str[int]]):
     list_bigger_200 = []
 
     all_lists = [list_smaller_5, list_smaller_10, list_smaller_25, list_smaller_50, list_smaller_75, list_smaller_100, list_smaller_150, list_smaller_200, list_bigger_200]
-    all_keys = [(0,5), (6,10), (11,25), (26,50), (51,75), (76,100), (101,150), (151,200), (200,3500)]
+    all_keys = [range(0,5), range(6,10), range(11,25), range(26,50), range(51,75), range(76,100), range(101,150), range(151,200), range(200,3500)]
     
     # Iterate over authors in the dictionary 
     # and their average verse length, in order
