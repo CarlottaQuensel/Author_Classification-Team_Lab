@@ -83,7 +83,7 @@ def learnFeatures(data: list[tuple[Poem, str]], class_features: int = 50) -> lis
             all_pmi[x]))[:class_features-1]
         # Instantiate one less feature than wanted by the author with the learned word indices and rhyme schemes
         # (as there are only 24 possible rhyme schemes, but as many words as the size of the vocabulary,
-        # the split might not be even)
+        # the split might not be even) TODO: too many punctuation features, maybe delete?
         # (the last feature for each author is the average verse number already calculated)
         for feature in descending_pmi:
             # Return Max Ent functions as a list of Feature class objects (class description above)
@@ -92,7 +92,7 @@ def learnFeatures(data: list[tuple[Poem, str]], class_features: int = 50) -> lis
                     Feature(label=author, doc_property=feature, form="rhyme_scheme"))
             else:
                 features.append(
-                    Feature(label=author, doc_property=[0], form="bow"))
+                    Feature(label=author, doc_property=feature, form="bow"))
     return features
 
 
