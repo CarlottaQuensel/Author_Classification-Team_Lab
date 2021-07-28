@@ -10,7 +10,6 @@ import json
 
 # TODO: Set to the file path of the current folder
 path = "C:/Users/HP Envy/Documents/Uni/Master/SS21/topics in emotion analysis/Author_Classification-Team_Lab/baseline/advanced_approach/"
-# TODO: new pickle or csv for data
 raw_data = json.load(open(f'{path}poems.json', 'r'))
 
 
