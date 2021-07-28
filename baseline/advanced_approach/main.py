@@ -60,12 +60,12 @@ def build_dataset(raw_data: dict[str], train_split: float = 0.75, min_poems: int
     train = [(Poem(poem, vocabulary), author) for poem, author in train]
     test = [(Poem(poem, vocabulary), author) for poem, author in test]
 
-    return train, test
+    return train, test,vocabulary
 
-#classifier = MaxEnt()
-train_set, test_set = build_dataset(raw_data, max_author=30)
+classifier = MaxEnt()
+train_set, test_set, vocabulary = build_dataset(raw_data, max_author=30)
 
-#classifier.learnFeatures(train_set, class_features=30)
+classifier.learnFeatures(train_set, class_features=30, vocab=vocabulary, trace=True)
 #classifier.train(train_set, trace=True)
 
 #predicted = list()

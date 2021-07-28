@@ -33,7 +33,7 @@ class MaxEnt():
             else:
                 self.learnFeatures(data)
 
-    def learnFeatures(self, data: list[tuple[tuple[int], str]], class_features: int=50, vocabulary: list[str] = None) -> None:
+    def learnFeatures(self, data: list[tuple[tuple[int], str]], class_features: int=50, vocabulary: list[str] = None, trace: bool = False) -> None:
         """
         Author: Carlotta Quensel (see module features.py)
         Compute the best features for the classifier based on pmi between
@@ -47,18 +47,21 @@ class MaxEnt():
             data (list[tuple[tuple[int], str]]):
                 Dataset consisting of a list of document-label pairs,
                 where the documents are word vectors
-            class_features (int):
+            class_features (int, optional):
                 The maximum number of features learned per class, default 50
-            vocabulary (dict[str]):
+            vocabulary (dict[str], optional):
                 The assignment of words to word vector indices used
                 in the given data set
+            trace (bool, optional):
+                If the vocabulary is given and the user wishes to trace the feature learning, 
+                30 features are printed out after learning
         """
         if vocabulary:
             self.vocabulary = vocabulary
 
         # Learning the feature-functions uses PMI and is explained more
         # thoroughly in learnFeatures.py
-        self.features = learnFeatures(data, class_features, vocab=vocabulary)
+        self.features = learnFeatures(data, class_features)
 
         # Each function has a corresponding weight, so the same number of
         # weights are randomly initialized
@@ -71,6 +74,14 @@ class MaxEnt():
         # After learning the features, information about the number of
         # features and labels is shown
         print(f"The classifier learned {len(self.features)} features for {len(self.labels)} classes.")
+        if trace and vocabulary:
+            for i in range(30):
+                if self.features[i].form == "bow":
+                    print(f"{i} - author: {self.features[i].label}, poem contains {list(self.vocabulary)[self.features[i].property]}")
+                elif self.features[i].form == "verse":
+                    print(f"{i} - author: {self.features[i].label}, poem has {self.features[i].property[0]+1} - {self.features[i].property[1]} verses")
+                elif self.features[i].form == "rhyme_scheme":
+                    print(f"{i} - author: {self.features[i].label}, poem has a {self.features[i].property} rhyme scheme")
 
     def classify(self, document: list[int], in_training: str=False, weights: list[int]=None):
         """
