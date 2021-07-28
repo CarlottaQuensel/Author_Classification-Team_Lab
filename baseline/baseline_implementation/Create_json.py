@@ -18,9 +18,9 @@ with open(f'{path}poetryfoundation-dataset.csv', encoding="utf-8") as file:
     # so that dictionary_of_poems = {'Author': ['poem1', 'poem2',...]}
     for index, row in data_frame.iterrows():
         if row[1] not in dictionary_of_poems:
-            dictionary_of_poems[row[1]] = [str(row[4]).replace('\n', ' ')]
+            dictionary_of_poems[row[1]] = [str(row[4])]
         else:
-            dictionary_of_poems[row[1]].append(str(row[4]).replace('\n', ' '))
+            dictionary_of_poems[row[1]].append(str(row[4]))
 
 
 json_object = json.dumps(dictionary_of_poems)
