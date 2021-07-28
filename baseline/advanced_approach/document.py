@@ -35,10 +35,14 @@ class Poem():
                 self.verses[i][-1] = re.sub(punctuation, "", self.verses[i][-1])
                 if not len(self.verses[i][-1]):
                     self.verses[i].pop()
+                    # Lines only consisting of punctuation are deleted for the same reason
+                    if not len(self.verses[i]):
+                        self.verses.pop(i)
+                        continue
                 i += 1
         # The rhyme scheme is constructed with the first four sentences of the poem
         rhymes = ["a", "b", "c", "d"]
-        verses = {1,2,3,4}
+        verses = {i for i in range(len(self.verses))}
         bins = {}
         for i in range(min(len(self.verses), 4)):
             if i in verses:
@@ -46,9 +50,23 @@ class Poem():
                 schema = rhymes.pop(0)
                 bins[i] = schema
                 for j in range(i+1,len(self.verses)):
-                    if self.verses[j][-1] in pronouncing.rhymes(self.verses[i][-1]) or self.verses[i][-1] == self.verses[j][-1]:
-                        bins[j] = schema
-                        verses.remove(j)
+                    if self.verses[j][-1] in pronouncing.rhymes(self.verses[i][-1]) or self.verses[i][-1] in pronouncing.rhymes(self.verses[j][-1]) or self.verses[i][-1] == self.verses[j][-1]:
+                        if j in verses:
+                            bins[j] = schema
+                            verses.remove(j)
+                        else:
+                            schema_j = bins[j]
+                            bins[i] = schema_j
+                            for k in bins:
+                                if bins[k] == schema:
+                                    bins[k] = schema_j
+                            schema_j = [schema_j]
+                            schema_j.extend(rhymes)
+                            rhymes = schema_j
+        # Poems under four lines are extended with dummy schemes
+        if len(self.verses) < 4:
+            for i in range(len(self.verses), 4):
+                bins[i] = "x"
         self.rhyme_scheme = bins[0]+bins[1]+bins[2]+bins[3]
 
     def getVector(self, vocab: dict[str]):

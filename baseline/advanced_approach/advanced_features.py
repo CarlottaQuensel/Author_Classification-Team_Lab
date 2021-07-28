@@ -94,7 +94,7 @@ def learnFeatures(data: list[tuple[Poem, str]], class_features: int = 50) -> lis
     return features
 
 
-def pmi(data: list[tuple[Poem, str]]) -> tuple(dict[dict[int]], dict[dict[str]]):
+def pmi(data: list[tuple[Poem, str]]) -> tuple[dict[dict[int]], dict[dict[str]]]:
     """Calculate the pointwise mutual information of a label y and text property x as
     log( p(x,y) / (p(x)*p(y)) ) between author labels and the bag of words and rhyme scheme
     property of the given poem list.
