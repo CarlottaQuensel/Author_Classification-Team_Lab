@@ -12,6 +12,7 @@ Juola, P. (2007). Authorship Attribution. Foundations and Trends® in Informatio
 Luyckx, K., & Daelemans, W. (2010). The effect of author set size and data size in authorship attribution. Literary and Linguistic Computing, 26(1), 35–55. https://doi.org/10.1093/llc/fqq013
 Roy, N. (2019, September 13). Authorship Analysis as a Text Classification or Clustering Problem. Towards Data Science; Medium. https://towardsdatascience.com/authorship-analysis-as-a-text-classification-or-clustering-problem-312549d4a4c0
 Stamatatos, E., Fakotakis, N., & Kokkinakis, G. (2000). Automatic Text Categorization in Terms of Genre and Author. Computational Linguistics, 26(4), 471–495. https://doi.org/10.1162/089120100750105920
+Nigam, K., Lafferty, J., & Mccallum, A. (1999). Using Maximum Entropy for Text Classification. IJCAI-99 Workshop on Machine Learning for Information Filtering, 1(1), 61–67. http://www.kamalnigam.com/papers/maxent-ijcaiws99.pdf
 
 Selenium tutorials:
 https://www.youtube.com/playlist?list=PLzMcBGfZo4-n40rB1XaJ0ak1bemvlqumQ
