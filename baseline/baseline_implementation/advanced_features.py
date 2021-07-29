@@ -5,12 +5,10 @@ from document import Poem
 import pickle
 
 
-path = ''
-average_verse_count = pickle.load(open(f'{path}average_dictionary.pickle', 'rb'))
-
 class Feature():
     label = str()
     property = int()
+    form = str()
 
     def __init__(self, label: str, form: str, doc_property) -> None:
         """Initialization of a maximum entropy feature.
@@ -53,149 +51,187 @@ class Feature():
         # to be multiplied with the weight
         return int(switch)
 
+    def learnFeatures(data: list[tuple[Poem, str]], class_features: int = 50) -> list[Feature]:
+        """Learns the most informative features for a set of authors from their respective poems. 
+        The function uses mutual pointwise information to compute the most relevant word and rhyme 
+        features for each author and the average for the verse number.
+        Args:
+            data (list[tuple[Poem, str]]): List of poems given as a Poem object with poem's author label.
+            class_features (int, optional): The number of features learned for each class (author). Defaults to 50.
+        Returns:
+            list[Feature]: Maximum entropy classification features consisting of an author label, a document property and
+                the form of the property (bag of words, verse number or rhyme scheme)
+        """
 
+        features = list()
+        verses = count_verses(data)
+        for bin in verses:
+            for author in verses[bin]:
+                features.append(
+                    Feature(label=author, doc_property=bin, form='verse'))
 
+        bow, rhyme = pmi(data)
+        # Sort PMI scores by relevance to find the most informative features
+        for author in bow:
+            # First sort the word indices and rhyme schemes by the decending value of their PMI score
+            # The absolute is used for sorting to allow for features with negative weights (unlikely author-word combinations)
+            all_pmi = {**bow[author], **rhyme[author]}
+            descending_pmi = sorted([property for property in all_pmi], reverse=True, key=lambda x: abs(
+                all_pmi[author][x]))[:class_features]
+            # Instantiate one less feature than wanted by the author with the learned word indices and rhyme schemes
+            # (as there are only 24 possible rhyme schemes, but as many words as the size of the vocabulary,
+            # the split might not be even)
+            # (the last feature is the average verse number that is calculated without PMI)
+            for feature in descending_pmi[:class_features-1]:
+                # print(label, vocab[feature[0]], pmi[label][feature])
+                # return Max Ent functions as a list of Feature class objects (description above)
+                if type(feature) == str:
+                    features.append(
+                        Feature(label=author, doc_property=feature, form="rhyme_scheme"))
+                else:
+                    features.append(
+                        Feature(label=author, doc_property=[0], form="bow"))
+        return features
 
-def learnFeatures(data: list[tuple[tuple[int], str]], class_features: int = 50, vocab=None) -> dict[dict[int]]:
-    """Learns the most informative features (= words) for a label set from the
-    set of respective documents. The function uses mutual pointwise information
-    to compute the most relevant features for each label.
-    Features can be the occurence or absence of a word in the document.
+    def count_verses(data: list[tuple[Poem, str]]):
 
-    Args:
-        data (list[int]): The set of documents given as word vectors consisting of 1's and 0's.
-        class_features (int, optional): The number of features learned for each class (author). Defaults to 50.
-        vocab (list[str], optional): A list of words that can be used to show which words are learned to make the 
-            word vectors more explainable by showing the vocabulary
+        # iterate over authors in dictionary
+        # and count verses,  create new dictionary
+        # so that {Author: [count of verse1, count of verse2, ...], ...}
+        count_dictionary = {}
+        for poem, Author in data:
+            if Author not in count_dictionary:
+                count_dictionary[Author] = [poem.verse_count]
+            else:
+                count_dictionary[Author].append(poem.verse_count)
 
-    Raises:
-        IndexError: The labels belong to the documents, thus their number should match up
+        # compute average count of verses per author
+        # so that {Author: [average count of verses], ...}
+        average_verse_count = {}
+        average_verses = sum(poem) / len(poem)
+        for Author in count_dictionary:
+            poems = count_dictionary[Author]
+            average_verse_count[Author] = average_verses
+    
 
-    Returns:
-        dict[dict[int]]: document features sorted by label and in descending order by PMI score
-    """
+        # Set bins
+        list_smaller_5 = []
+        list_smaller_10 = []
+        list_smaller_25 = []
+        list_smaller_50 = []
+        list_smaller_75 = []
+        list_smaller_100 = []
+        list_smaller_150 = []
+        list_smaller_200 = []
+        list_bigger_200 = []
 
-    pmi = pointwiseMutualInformation(data)
-    bow_pmi = 0 #TODO
-    verses_features = set_bins(average_verse_count)
-    rhyme_pmi = 0 # TODO
-    # Sort PMI scores by relevance to find the most informative features
-    features = list()
-    for label in pmi:
-        # First sort the document properties according to their PMI score
-        descending_scores = sorted([property for property in pmi[label]], reverse=True, key=lambda x: pmi[label][x])
-        # Then reassign the scores to the properties in the right order
-        # Only return the number of features determined by the user
-        class_features = min(len(descending_scores), class_features)
-        for feature in descending_scores[:class_features]:
-            # print(label, vocab[feature[0]], pmi[label][feature])
-            # Save feature functions as their own class
-            features.append(Feature(label, feature[0])) #TODO , form="bow"))
-            features.append(Feature(label, feature[0], form="verses"))
-    return features
+        all_lists = [list_smaller_5, list_smaller_10, list_smaller_25, list_smaller_50, list_smaller_75, list_smaller_100, list_smaller_150, list_smaller_200, list_bigger_200]
+        all_keys = [range(0,5), range(6,10), range(11,25), range(26,50), range(51,75), range(76,100), range(101,150), range(151,200), range(200,3500)]
+        
+        # Iterate over authors in the dictionary 
+        # and their average verse length, in order
+        # to assign them to the bins.
+        # so that list_smaller_X = [Author1, Author2, ...]
+        for Author in average_verse_count:
+            for verse_length in average_verse_count[Author]:
+                if verse_length <= 5:
+                    list_smaller_5.extend(Author)
+                elif verse_length <= 10 and verse_length > 5:
+                    list_smaller_10.extend(Author)
+                elif verse_length <= 25 and verse_length > 10: 
+                    list_smaller_25.extend(Author)
+                elif verse_length <= 50 and verse_length > 25:
+                    list_smaller_50.extend(Author)
+                elif verse_length <= 75 and verse_length > 50:
+                    list_smaller_75.extend(Author)
+                elif verse_length <= 100 and verse_length > 75:
+                    list_smaller_100.extend(Author)
+                elif verse_length <= 150 and verse_length > 100:
+                    list_smaller_150.extend(Author)
+                elif verse_length <= 200 and verse_length > 150:
+                    list_smaller_200.extend(Author)
+                elif verse_length > 200:
+                    list_bigger_200.extend(Author)
 
+        # returns features like
+        # {(0,5): [author1, author2], (6,10): [author3, author4],...}
+        verse_feature_dictionary = {}
+        for certain_list in all_lists:
+            for key in all_keys:
+                verse_feature_dictionary[key] = [certain_list]
 
-def pointwiseMutualInformation(data: list[tuple[tuple[int], str]]) -> dict[dict[int]]:
-    """Takes data points (document vectors) and their labels and computes
-    the pointwise mutual information for each combination of feature and label.
+    def pmi(data: list[tuple[Poem, str]]) -> tuple(dict[dict[int]], dict[dict[str]]):
+        """Calculate the pointwise mutual information of a label y and text property x as
+        log( p(x,y) / (p(x)*p(y)) ) between author labels and the bag of words and rhyme scheme
+        property of the given poem list.
+        Args:
+            data (list[tuple[Poem, str]]): The data to calculate the PMI from as pairs of a poem and
+            author. The poems' word vector and rhyme scheme class feature (see document.py) are used
+        Returns:
+            tuple(dict[dict[int]], dict[dict[str]]): Return two sets of PMI scores for word (word vector index)
+            and rhyme (scheme string) features, sorted first by author, then by feature.
+        """
+        doc_number = len(data)
+        vocabulary = len(data[0][0].vector)
 
-    Args:
-        data (list[int]): Documents given as word vectors with 1/included and 0/absent words as elements
+        # Initializing the counts for the different features (bag of words/verse number/rhyme scheme) and authors
+        # and the feature-label combination counts
+        c_authors = dict()
+        c_rhymes = dict()
+        c_words = [0 for i in range(len(vocabulary))]
+        c_author_words = dict()
+        c_author_rhymes = dict()
 
-    Returns:
-        dict[dict[int]]: PMI scores sorted by label and feature
-    """
-    doc_number = len(data)
-    vocabulary = len(data[0][0])
+        # Iteratively counting each poem's features and author
+        for (poem, author) in data:
+            # The word counts for the whole poetry collection are added up
+            c_words = [c_words[i] + poem.vector[i] for i in range(vocabulary)]
+            # The author counts and all combined counts for author and property are added up
+            # Unseen authors are addressed by instantiating their counts instead of incrementing them
+            try:
+                c_authors[author] += 1
+                c_author_words[author] = [c_author_words[author]
+                                        [i] + poem.vector[i] for i in range(vocabulary)]
+                # If the author was already seen before, the current rhyme scheme might still be new
+                try:
+                    c_author_rhymes[author][poem.rhyme_scheme] += 1
+                except KeyError:
+                    c_author_rhymes[author][poem.rhyme_scheme] = 1
+            except KeyError:
+                c_authors[author] += 1
+                c_author_rhymes[author] = {poem.rhyme_scheme: 1}
+                c_author_words[author] = poem.vector
+            # The counts for the rhyme schemes are added up separately.
+            try:
+                c_rhymes[poem.rhyme_scheme] += 1
+            except KeyError:
+                c_rhymes[poem.rhyme_scheme] = 1
 
-    # As the document vectors consist of 1 and 0, summing all documents yields the
-    # number of documents each word occurs in.
-    c_words = [sum([doc_vec[i] for (doc_vec, label) in data]) for i in range(vocabulary)]
-    # The number of documents the words do not occur in, is the complement
-    # given the overall document count
-    c_nwords = [doc_number - wordcount for wordcount in c_words]
+        # The counts are converted into probabilities by dividing them by the total number
+        # of poems in the collection:
+        # -> Individual probabilities for the denominator of PMI
+        p_words = [c_words[i]/doc_number for i in range(vocabulary)]
+        p_rhymes = {rhyme: c_rhymes[rhyme]/doc_number for rhyme in c_rhymes}
+        p_authors = {author: c_authors[author]/doc_number for author in c_authors}
+        # -> Combined probabilities for the numerator of PMI
+        p_author_words = {author: [c_author_words[author][i] /
+                                doc_number for i in range(vocabulary)] for author in c_author_words}
+        p_author_rhymes = {author: {
+            scheme: c_author_rhymes[author][scheme]/doc_number for scheme in c_author_rhymes[author]} for author in c_author_rhymes}
 
-    # Counting the frequency of each label
-    c_labels = dict()
-    # and each label-word pair
-    c_words_labels = dict()
-    for doc, label in data:
-        # Handling the first and subsequent occurences of a label
-        try:
-            c_labels[label] += 1
-        except KeyError:
-            c_labels[label] = 1
-
-        # The frequency of label-word pairs can be computed as a vector sum
-        # of document vectors which have the label
-        try:
-            c_words_labels[label] = [c_words_labels[label][j] + doc[j] for j in range(vocabulary)]
-        except KeyError:
-            c_words_labels[label] = doc
-
-    # Same as the words alone, the joint probability with the labels is also
-    # computed for documents not including the words
-    c_nwords_labels = dict()
-    for label in c_words_labels:
-        # These counts are the complement of the documents
-        c_nwords_labels[label] = [c_labels[label] - c_words_labels[label][i] for i in range(vocabulary)]
-
-    # Convert frequencies/counts into relative frequencies/probabilities for all counts
-    p_words = [c_words[i]/doc_number for i in range(len(c_words))]
-    p_nwords = [c_nwords[i]/doc_number for i in range(len(c_nwords))]
-    p_labels = {label: c_labels[label]/doc_number for label in c_labels}
-    p_words_labels = {label: [c_words_labels[label][i]/doc_number for i in range(vocabulary)] for label in c_words_labels}
-    p_nwords_labels = {label: [c_nwords_labels[label][i]/doc_number for i in range(vocabulary)] for label in c_nwords_labels}
-
-    # Compute pointwise mutual information as p(w,l)/(p(w)*p(l))
-    # with w=word, l=label
-    pmi = dict()
-    for label in p_labels:
-        pmi[label] = dict()
-        for i in range(vocabulary):
-            # Scores for occurence of the word
-            pmi[label][(i, True)] = log(p_words_labels[label][i] / (p_words[i] * p_labels[label]))
-            # Scores for absence of the word
-            pmi[label][(i, False)] = log(p_nwords_labels[label][i] / (p_nwords[i] * p_labels[label]))
-    # The PMI scores are ordered first by label and then by document property and returned
-    return pmi
-
-def set_bins(self, average_verse_count: dict[str[int]]):
-
-    '''Method that assigns Authors to different bins,
-    according to their average verse length.'''
-
-    # Set bins
-    list_smaller_5 = []
-    list_smaller_10 = []
-    list_smaller_25 = []
-    list_smaller_50 = []
-    list_smaller_75 = []
-    list_smaller_100 = []
-    list_smaller_150 = []
-    list_smaller_200 = []
-    list_bigger_200 = []
-
-    # Iterate over authors in the dictionary 
-    # and their average verse length, in order
-    # to assign them to the bins.
-    for Author in self.average_verse_count:
-        for verse_length in self.average_verse_count[Author]:
-            if verse_length <= 5:
-                list_smaller_5.extend(Author)
-            elif verse_length <= 10 and verse_length > 5:
-                list_smaller_10.extend(Author)
-            elif verse_length <= 25 and verse_length > 10: 
-                list_smaller_25.extend(Author)
-            elif verse_length <= 50 and verse_length > 25:
-                list_smaller_50.extend(Author)
-            elif verse_length <= 75 and verse_length > 50:
-                list_smaller_75.extend(Author)
-            elif verse_length <= 100 and verse_length > 75:
-                list_smaller_100.extend(Author)
-            elif verse_length <= 150 and verse_length > 100:
-                list_smaller_150.extend(Author)
-            elif verse_length <= 200 and verse_length > 150:
-                list_smaller_200.extend(Author)
-            elif verse_length > 200:
-                list_bigger_200.extend(Author)
+        # Calculating PMI for all word/author combinations as log( P(word,author) / P(word)*P(author) )
+        bow_pmi = {author: {i: log(p_author_words[author][i] / (p_authors[author]*p_words[i]))
+                            for i in range(vocabulary)} for author in p_author_words}
+        # Because authors never using a rhyme scheme is not counted (unlike the bag of words features), the calculation of
+        # rhyme scheme PMI needs an exception for 0 probabilities
+        rhyme_pmi = {}
+        for author in p_author_rhymes:
+            rhyme_pmi[author] = {}
+            for scheme in p_rhymes:
+                try:
+                    rhyme_pmi[author][scheme] = log(
+                        p_author_rhymes[author][scheme] / (p_authors[author]*p_rhymes[scheme]))
+                except KeyError:
+                    rhyme_pmi[author][scheme] = log(0)
+        # The two property's PMI scores are given to the feature learning function
+        return bow_pmi, rhyme_pmi
