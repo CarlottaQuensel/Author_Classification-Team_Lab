@@ -72,18 +72,18 @@ def learnFeatures(data: list[tuple[Poem, str]], class_features: int = 50) -> lis
             the form of the property (bag of words, verse number or rhyme scheme)
     """
 
-    #verses = count_verses(data)
+    verses = count_verses(data)
     features = list()
-    #for bin in verses:
-    #        for author in verses[bin]:
-    #            features.append(
-    #                Feature(label=author, doc_property=bin, form='verse'))
+    for bin in verses:
+            for author in verses[bin]:
+                features.append(
+                    Feature(label=author, doc_property=bin, form='verse'))
     # Calculate the pointwise mutual information for token and verse features
     bow, rhyme = pmi(data)
     # For x learned class features, one is used for the a priory weight of an author, one is the author's
     # verse average, leaving x-2 token/rhyme features from which the highest PMI scores are used separately
     # to balance between the many token counts and sparse rhyme scheme feature (one per poem)
-    class_features = class_features-1
+    class_features = class_features-2
     rhyme_features = int((class_features)*0.3)
     bow_features = class_features-rhyme_features
     # Sort PMI scores by relevance to find the most informative features
