@@ -75,15 +75,16 @@ class MaxEnt():
         # the learning is traced, also five features per author
         print(f"The classifier learned {len(self.features)} features for {len(self.labels)} classes.")
         if trace and vocabulary:
-            for i in range(0,len(self.features),6):
-                if self.features[i].form == "bow":
-                    print(f"{i} - author: {self.features[i].label}, poem contains {list(self.vocabulary)[self.features[i].property]}")
-                elif self.features[i].form == "verse":
-                    print(f"{i} - author: {self.features[i].label}, poem has {self.features[i].property[0]+1} - {self.features[i].property[1]} verses")
-                elif self.features[i].form == "rhyme_scheme":
-                    print(f"{i} - author: {self.features[i].label}, poem has a {self.features[i].property} rhyme scheme")
-                elif self.features[i].form == "apriori":
-                    print(f"{i} - author: {self.features[i].label}")
+            for i in range(0,len(self.features)):
+                if i % 30 in {0,1,2,3,29}:
+                    if self.features[i].form == "apriori":
+                        print(f"{i} - author: {self.features[i].label}")
+                    elif self.features[i].form == "bow":
+                        print(f"{i} - author: {self.features[i].label}, poem contains {list(self.vocabulary)[self.features[i].property]}")
+                    elif self.features[i].form == "verse":
+                        print(f"{i} - author: {self.features[i].label}, poem has {self.features[i].property[0]+1} - {self.features[i].property[1]} verses")
+                    elif self.features[i].form == "rhyme_scheme":
+                        print(f"{i} - author: {self.features[i].label}, poem has a {self.features[i].property} rhyme scheme")
 
     def classify(self, document: list[int], in_training: str=False, weights: list[int]=None):
         """
