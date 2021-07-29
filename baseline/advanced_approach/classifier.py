@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from advanced_features import *
+from document import Poem
 import numpy as np
 
 
@@ -16,14 +17,14 @@ class MaxEnt():
     weights = list()
     features = list()
 
-    def __init__(self, data: list[tuple[tuple[int], str]]=None, class_features: int=None) -> None:
+    def __init__(self, data: list[tuple[Poem, str]] = None, class_features: int = None) -> None:
         """
         Author: Katrin Schmidt
         Initializing an instance of a Maximum Entropy classifier, if data is
         already given, then also learning class features
         Args:
-            data (list[tuple[tuple[int], str]], optional):
-                Dataset as a list of document vector-label pairs. Defaults to None.
+            data (list[tuple[Poem, str]], optional):
+                Dataset as a list of Poem-author pairs. Defaults to None.
             class_features (int, optional):
                 Number of max learned features per class. Defaults to None.
         """
@@ -33,7 +34,7 @@ class MaxEnt():
             else:
                 self.learnFeatures(data)
 
-    def learnFeatures(self, data: list[tuple[tuple[int], str]], class_features: int=50, vocabulary: list[str] = None, trace: bool = False) -> None:
+    def learnFeatures(self, data: list[tuple[Poem, str]], class_features: int = 50, vocabulary: list[str] = None, trace: bool = False) -> None:
         """
         Author: Carlotta Quensel (see module features.py)
         Compute the best features for the classifier based on pmi between
@@ -44,7 +45,7 @@ class MaxEnt():
         -> label="Shakespeare" and property=45 (index of "Thou", is in the document).
 
         Args:
-            data (list[tuple[tuple[int], str]]):
+            data (list[tuple[Poem, str]]):
                 Dataset consisting of a list of document-label pairs,
                 where the documents are word vectors
             class_features (int, optional):
@@ -53,7 +54,7 @@ class MaxEnt():
                 The assignment of words to word vector indices used
                 in the given data set
             trace (bool, optional):
-                If the vocabulary is given and the user wishes to trace the feature learning, 
+                If the vocabulary is given and the user wishes to trace the feature learning,
                 30 features are printed out after learning
         """
         if vocabulary:
@@ -65,28 +66,33 @@ class MaxEnt():
 
         # Each function has a corresponding weight, so the same number of
         # weights are randomly initialized
-        self.weights = [np.random.randint(-10, 10) for i in range(len(self.features))]
+        self.weights = [np.random.randint(-10, 10)
+                                          for i in range(len(self.features))]
 
         # The classifier also has all labels of the training data saved
         # to simplify classification
         self.labels = sorted({feature.label for feature in self.features})
 
-        # After learning the features, the number of learned features is shown and if 
+        # After learning the features, the number of learned features is shown and if
         # the learning is traced, also five features per author
-        print(f"The classifier learned {len(self.features)} features for {len(self.labels)} classes.")
+        print(
+            f"The classifier learned {len(self.features)} features for {len(self.labels)} classes.")
         if trace and vocabulary:
-            for i in range(0,len(self.features)):
-                if i % 30 in {0,1,2,3,29}:
+            for i in range(0, len(self.features)):
+                if i % 30 in {0, 1, 2, 3, 29}:
                     if self.features[i].form == "apriori":
                         print(f"{i} - author: {self.features[i].label}")
                     elif self.features[i].form == "bow":
-                        print(f"{i} - author: {self.features[i].label}, poem contains {list(self.vocabulary)[self.features[i].property]}")
+                        print(
+                            f"{i} - author: {self.features[i].label}, poem contains {list(self.vocabulary)[self.features[i].property]}")
                     elif self.features[i].form == "verse":
-                        print(f"{i} - author: {self.features[i].label}, poem has {self.features[i].property[0]+1} - {self.features[i].property[1]} verses")
+                        print(
+                            f"{i} - author: {self.features[i].label}, poem has {self.features[i].property[0]+1} - {self.features[i].property[1]} verses")
                     elif self.features[i].form == "rhyme_scheme":
-                        print(f"{i} - author: {self.features[i].label}, poem has a {self.features[i].property} rhyme scheme")
+                        print(
+                            f"{i} - author: {self.features[i].label}, poem has a {self.features[i].property} rhyme scheme")
 
-    def classify(self, document: list[int], in_training: str=False, weights: list[int]=None):
+    def classify(self, document: list[int], in_training: str = False, weights: list[int] = None):
         """
         Author: Carlotta Quensel
         The classifier predicts the most probable label from its label set for a
@@ -124,14 +130,16 @@ class MaxEnt():
         if not weights:
             weights = self.weights
         elif len(weights) != len(self.weights):
-            print(f"The classifier needs exactly one weight per function. You used {len(weights)} weights for {len(self.features)} functions.")
+            print(
+                f"The classifier needs exactly one weight per function. You used {len(weights)} weights for {len(self.features)} functions.")
             return None
 
         # The numerator of the Max Ent-probability is the exponential function
         # of every weight*function with the current label and given document
         numerator = dict()
         for label in self.labels:
-            numerator[label] = np.exp(sum([weights[i]*self.features[i].apply(label, document) for i in range(len(self.features))]))
+            numerator[label] = np.exp(sum(
+                [weights[i]*self.features[i].apply(label, document) for i in range(len(self.features))]))
 
         # As the denominator is the sum of the exponential for all labels, it
         # only depends on the document and is the same for every label
@@ -149,15 +157,15 @@ class MaxEnt():
         else:
             return max(p.keys(), key=lambda x: p[x])
 
-    def accuracy(self, data: list[tuple[tuple[int], str]], weights: list[int]=None) -> float:
+    def accuracy(self, data: list[tuple[Poem, str]], weights: list[int] = None) -> float:
         """
         Author: Carlotta Quensel
         Compute the basic accuracy of the classifier with a specific weight set as
         the percentage of correct predictions from the overall number of predictions
 
         Args:
-            data (list[tuple[tuple[int], str]]):
-                List of datapoints as pairs of a document vector and a label string
+            data (list[tuple[Poem, str]]):
+                List of datapoints as pairs of a Poem and an author string
             weights (list[int], optional):
                 Custom weights to compare with the classifier's current weight set.
                 Defaults to None.
@@ -174,7 +182,7 @@ class MaxEnt():
                 tp += 1
         return tp/len(data)
 
-    def train(self, data: list[tuple[tuple[int], str]], min_improvement: float = 0.001, trace: bool = False):
+    def train(self, data: list[tuple[Poem, str]], min_improvement: float = 0.001, trace: bool = False):
         '''
         Author: Katrin Schmidt (main),
                 Carlotta Quensel (trace, loss and accuracy)
@@ -183,8 +191,8 @@ class MaxEnt():
         the iterations stop after it counts 100 (instead of a specific value).
 
         Args:
-            data (list[tuple[tuple[int], str]]):
-                Dataset as a list of document vector-label pairs.
+            data (list[tuple[Poem, str]]):
+                Dataset as a list of Poem-author pairs.
             min_improvement (float, optional):
                 The minimum accuracy improvement needed for a new iteration of
                 optimization. Defaults to 0.0001
@@ -201,7 +209,7 @@ class MaxEnt():
             print(f"Accuracy with random weights: {new_accuracy}.")
             acc = [new_accuracy]
         new_lambda = list()
-        
+
         # Set control variable i to 1 to keep track of the optimization steps
         i = 1
 
@@ -215,29 +223,33 @@ class MaxEnt():
 
             # Iterate over features and compute the partial_derivative
             # and save the updated weights temporarily
-            new_lambda = [self.weights[i] + self.partial_derivative(data, lambda_i=i) for i in range(len(self.features))]
+            new_lambda = [self.weights[i] + self.partial_derivative(
+                data, lambda_i=i) for i in range(len(self.features))]
 
             # Update accuracy and derivative or loss to check improvement
             # (acc -> 1, loss -> 0)
-            new_loss = abs(sum([x2-x1 for (x1, x2) in zip(new_lambda, self.weights)]))
+            new_loss = abs(
+                sum([x2-x1 for (x1, x2) in zip(new_lambda, self.weights)]))
             old_accuracy = new_accuracy
             new_accuracy = self.accuracy(data, new_lambda)
 
             # Track the training progress by printing accuracy and loss
             # for each optimization step
             if trace:
-                print(f"iteration {i:2} : accuracy {new_accuracy}\n{' ':16}loss {new_loss}")
+                print(
+                    f"iteration {i:2} : accuracy {new_accuracy}\n{' ':16}loss {new_loss}")
                 acc.append(new_accuracy)
                 loss.append(new_loss)
             i += 1
 
         if trace:
-            print(f"The training consisted of {i-1} optimization steps in which the accuracy changed from {acc[0]} to {acc[-1]} and the error changed from {loss[0]} to {loss[-1]}.")
+            print(
+                f"The training consisted of {i-1} optimization steps in which the accuracy changed from {acc[0]} to {acc[-1]} and the error changed from {loss[0]} to {loss[-1]}.")
             # If the user wants to track the training process, the accuracy and
             # loss scores are returned to potentially plot the improvement
             return acc, loss
 
-    def partial_derivative(self, data: list[tuple[tuple[int], str]], lambda_i: int) -> list[float]:
+    def partial_derivative(self, data: list[tuple[Poem, str]], lambda_i: int) -> list[float]:
         '''
         Author: Katrin Schmidt
         Method that computes the partial derivatives of the objective function F
@@ -245,8 +257,8 @@ class MaxEnt():
         to λi.
 
         Args:
-            data (list[tuple[tuple[int],str]]):
-                Dataset as a list of document vector-label pairs to apply
+            data (list[tuple[Poem,str]]):
+                Dataset as a list of Poem-author pairs to apply
                 the partial dervative function to for each weight λi
             lambda_i (int):
                 Index of the weight with regard to which the derivative
@@ -260,7 +272,6 @@ class MaxEnt():
         derivative_B = 0
 
         for (document, gold_label) in data:
-
             # Calculate first summand by counting the number of
             # correctly recognized document-label pairs
             derivative_A += self.features[lambda_i].apply(gold_label, document)
