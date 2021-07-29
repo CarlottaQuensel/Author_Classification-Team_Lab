@@ -191,6 +191,69 @@ def pmi(data: list[tuple[Poem, str]]) -> tuple[dict[dict[int]], dict[dict[str]]]
     return bow_pmi, rhyme_pmi
 
 
-def averageVerseLength(data):
-    # TODO: Katis Funktion aus main.py
-    return dict()
+def count_verses(data: list[tuple[Poem, str]]):
+
+        # iterate over authors in dictionary
+        # and count verses,  create new dictionary
+        # so that {Author: [count of verse1, count of verse2, ...], ...}
+        count_dictionary = {}
+        for poem, Author in data:
+            if Author not in count_dictionary:
+                count_dictionary[Author] = [poem.verse_count]
+            else:
+                count_dictionary[Author].append(poem.verse_count)
+
+        # compute average count of verses per author
+        # so that {Author: [average count of verses], ...}
+        average_verse_count = {}
+        average_verses = sum(poem) / len(poem)
+        for Author in count_dictionary:
+            poems = count_dictionary[Author]
+            average_verse_count[Author] = average_verses
+    
+
+        # Set bins
+        list_smaller_5 = []
+        list_smaller_10 = []
+        list_smaller_25 = []
+        list_smaller_50 = []
+        list_smaller_75 = []
+        list_smaller_100 = []
+        list_smaller_150 = []
+        list_smaller_200 = []
+        list_bigger_200 = []
+
+        all_lists = [list_smaller_5, list_smaller_10, list_smaller_25, list_smaller_50, list_smaller_75, list_smaller_100, list_smaller_150, list_smaller_200, list_bigger_200]
+        all_keys = [range(0,5), range(6,10), range(11,25), range(26,50), range(51,75), range(76,100), range(101,150), range(151,200), range(200,3500)]
+        
+        # Iterate over authors in the dictionary 
+        # and their average verse length, in order
+        # to assign them to the bins.
+        # so that list_smaller_X = [Author1, Author2, ...]
+        for Author in average_verse_count:
+            for verse_length in average_verse_count[Author]:
+                if verse_length <= 5:
+                    list_smaller_5.extend(Author)
+                elif verse_length <= 10 and verse_length > 5:
+                    list_smaller_10.extend(Author)
+                elif verse_length <= 25 and verse_length > 10: 
+                    list_smaller_25.extend(Author)
+                elif verse_length <= 50 and verse_length > 25:
+                    list_smaller_50.extend(Author)
+                elif verse_length <= 75 and verse_length > 50:
+                    list_smaller_75.extend(Author)
+                elif verse_length <= 100 and verse_length > 75:
+                    list_smaller_100.extend(Author)
+                elif verse_length <= 150 and verse_length > 100:
+                    list_smaller_150.extend(Author)
+                elif verse_length <= 200 and verse_length > 150:
+                    list_smaller_200.extend(Author)
+                elif verse_length > 200:
+                    list_bigger_200.extend(Author)
+
+        # returns features like
+        # {(0,5): [author1, author2], (6,10): [author3, author4],...}
+        verse_feature_dictionary = {}
+        for certain_list in all_lists:
+            for key in all_keys:
+                verse_feature_dictionary[key] = [certain_list]
