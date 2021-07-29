@@ -9,14 +9,16 @@ class Feature():
     property = int()
     form = str()
 
-    def __init__(self, label: str, form: str, doc_property) -> None:
+    def __init__(self, label: str, form: str, doc_property=None) -> None:
         """Initialization of a maximum entropy feature.
         A MaxEnt feature is a binary function that where a document either has
         a property related to a label or not.
 
         Args:
-            label (str): The label whose weight the function switches on or off.
-            doc_property : Placeholder for detailed features: Token index, rhyme scheme, poem length
+            label (str): The author label whose weight the function switches on or off.
+            doc_property (optional): Placeholder for detailed features: Token index, 
+                rhyme scheme string, poem length and an author only feature (no property needed)
+
         """
         self.label = label
         self.property = doc_property
@@ -49,6 +51,8 @@ class Feature():
         elif self.form == "verse":
             switch = (self.label == current_label and self.property[0] <
                       doc.verse_count <= self.property[1])
+        elif self.form == "apriori":
+            switch = (self.label == current_label)
         # The boolean on/off-switch is converted to a number
         # to be multiplied with the weight
         return int(switch)
@@ -70,22 +74,30 @@ def learnFeatures(data: list[tuple[Poem, str]], class_features: int = 50) -> lis
 
     # verse = averageVerseLength(data)  # TODO Katis Funktion
     features = list()
-    # for bin in verse:
-    #    for author in verse[bin]:
-    #        features.append(Feature(label=author, form="verse", doc_property=bin))
+    # Calculate the pointwise mutual information for token and verse features
     bow, rhyme = pmi(data)
+    # For x learned class features, one is used for the a priory weight of an author, one is the author's
+    # verse average, leaving x-2 token/rhyme features from which the highest PMI scores are used separately
+    # to balance between the many token counts and sparse rhyme scheme feature (one per poem)
+    class_features = class_features-2
+    rhyme_features = int((class_features-2)*0.3)
+    bow_features = class_features-2-rhyme_features
     # Sort PMI scores by relevance to find the most informative features
     for author in bow:
+        features.append(Feature(label=author, form="apriori"))
         # First sort the word indices and rhyme schemes by the decending value of their PMI score
         # The absolute is used for sorting to allow for features with negative weights (unlikely author-word combinations)
-        all_pmi = {**bow[author], **rhyme[author]}
-        descending_pmi = sorted([property for property in all_pmi], reverse=True, key=lambda x: abs(
-            all_pmi[x]))[:class_features-1]
+        decending_bow = sorted([property for property in bow[author]], reverse=True, key=lambda x: abs(
+            bow[author][x]))[:bow_features]
+        decending_rhyme = sorted([property for property in rhyme[author]], reverse=True, key=lambda x: abs(
+            rhyme[author][x]))[:rhyme_features]
+        decending_pmi = decending_bow[:]
+        decending_pmi.extend(decending_rhyme)
         # Instantiate one less feature than wanted by the author with the learned word indices and rhyme schemes
         # (as there are only 24 possible rhyme schemes, but as many words as the size of the vocabulary,
-        # the split might not be even) TODO: too many punctuation features, maybe delete?
+        # the split might not be even)
         # (the last feature for each author is the average verse number already calculated)
-        for feature in descending_pmi:
+        for feature in decending_pmi:
             # Return Max Ent functions as a list of Feature class objects (class description above)
             if type(feature) == str:
                 features.append(
@@ -151,17 +163,20 @@ def pmi(data: list[tuple[Poem, str]]) -> tuple[dict[dict[int]], dict[dict[str]]]
     p_words = [c_words[i]/doc_number for i in range(vocabulary)]
     p_rhymes = {rhyme: c_rhymes[rhyme]/doc_number for rhyme in c_rhymes}
     p_authors = {author: c_authors[author]/doc_number for author in c_authors}
-    # -> Combined probabilities for the numerator of PMI
-    p_author_words = {author: [c_author_words[author][i] /
-                               doc_number for i in range(vocabulary)] for author in c_author_words}
+    # -> Combined probabilities for the numerator of PMI (smothed for the token features to avoid
+    #    -infinity pmi values for unseen combinations)
+    p_author_words = {author: [(c_author_words[author][i]+1) /
+                               (doc_number+1) for i in range(vocabulary)] for author in c_author_words}
     p_author_rhymes = {author: {
-        scheme: c_author_rhymes[author][scheme]/doc_number for scheme in c_author_rhymes[author]} for author in c_author_rhymes}
+        scheme: (c_author_rhymes[author][scheme]+1)/(doc_number+1) for scheme in c_author_rhymes[author]} for author in c_author_rhymes}
 
     # Calculating PMI for all word/author combinations as log( P(word,author) / P(word)*P(author) )
+    for index in range(vocabulary):
+        if p_words[index] == 0:
+            print(index, "count:", c_words[index])
     bow_pmi = {author: {i: log(p_author_words[author][i] / (p_authors[author]*p_words[i]))
                         for i in range(vocabulary)} for author in p_author_words}
-    # Because authors never using a rhyme scheme is not counted (unlike the bag of words features), the calculation of
-    # rhyme scheme PMI needs an exception for 0 probabilities
+    # Calculating the PMI for rhyme scheme and author combinations
     rhyme_pmi = {}
     for author in p_author_rhymes:
         rhyme_pmi[author] = {}
@@ -170,7 +185,8 @@ def pmi(data: list[tuple[Poem, str]]) -> tuple[dict[dict[int]], dict[dict[str]]]
                 rhyme_pmi[author][scheme] = log(
                     p_author_rhymes[author][scheme] / (p_authors[author]*p_rhymes[scheme]))
             except KeyError:
-                rhyme_pmi[author][scheme] = log(0)
+                # Add-one smoothing for unseen author-scheme combinations
+                rhyme_pmi[author][scheme] = log((1/(doc_number+1)) / (p_authors[author]*p_rhymes[scheme]))
     # The two property's PMI scores are given to the feature learning function
     return bow_pmi, rhyme_pmi
 
