@@ -229,7 +229,7 @@ class MaxEnt():
             # Update accuracy and derivative or loss to check improvement
             # (acc -> 1, loss -> 0)
             new_loss = abs(
-                sum([x2-x1 for (x1, x2) in zip(new_lambda, self.weights)]))
+                sum([x1-x2 for (x1, x2) in zip(new_lambda, self.weights)]))
             old_accuracy = new_accuracy
             new_accuracy = self.accuracy(data, new_lambda)
 
