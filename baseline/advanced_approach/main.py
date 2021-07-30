@@ -71,7 +71,7 @@ classifier = MaxEnt()
 train_set, test_set, vocabulary = build_dataset(raw_data, max_author=30)
 print(f"The vocabulary consists of {len(vocabulary)} words")
 
-classifier.learnFeatures(train_set, bow_features=30, verse_features=False,
+classifier.learnFeatures(train_set, bow_features=30, verse_features=True,
                          rhyme_features=5, vocabulary=vocabulary, trace=True)
 classifier.train(train_set, trace=True)
 

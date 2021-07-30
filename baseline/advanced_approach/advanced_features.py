@@ -81,19 +81,20 @@ def learnFeatures(data: list[tuple[Poem, str]], bow_features: int = 30, verse_fe
             for author in verses[bin]:
                 features.append(
                     Feature(label=author, doc_property=bin, form='verse'))
-    # Calculate the pointwise mutual information for token and verse features if the user wants them to be learned
+    # Calculate the pointwise mutual information for token and verse features
     bow = bow_pmi(data)
-    if rhyme_features:
-        rhyme = rhyme_pmi(data)
+    rhyme = rhyme_pmi(data)
     # Sort PMI scores by relevance to find the most informative features
     for author in bow:
         # First sort the word indices and rhyme schemes by the decending value of their PMI score
-        descending_pmi = sorted([property for property in bow[author]],
-                                reverse=True, key=lambda x: bow[author][x])[:bow_features]
-        if rhyme_features:
-            descending_rhyme = sorted([property for property in rhyme[author]],
-                                      reverse=True, key=lambda x: rhyme[author][x])[:rhyme_features]
+        if bow_features and rhyme_features:
+            descending_pmi = sorted([property for property in bow[author]], reverse=True, key=lambda x: bow[author][x])[:bow_features]
+            descending_rhyme = sorted([property for property in rhyme[author]], reverse=True, key=lambda x: rhyme[author][x])[:rhyme_features]
             descending_pmi.extend(descending_rhyme)
+        elif rhyme_features:
+            descending_pmi = sorted([property for property in rhyme[author]], reverse=True, key=lambda x: rhyme[author][x])[:rhyme_features]
+        elif bow_features:
+            descending_pmi = sorted([property for property in bow[author]], reverse=True, key=lambda x: bow[author][x])[:bow_features]
         # Instantiate the number of features wanted by the user with the learned word indices and rhyme schemes
         for feature in descending_pmi:
             # Return Max Ent functions as a list of Feature class objects (class description above)
