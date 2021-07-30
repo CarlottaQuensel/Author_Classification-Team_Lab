@@ -68,17 +68,19 @@ def build_dataset(raw_data: dict[str], train_split: float = 0.75, min_poems: int
 
 
 classifier = MaxEnt()
+# Obtain the training and test data for the 30 most prolific authors
 train_set, test_set, vocabulary = build_dataset(raw_data, max_author=30)
 print(f"The vocabulary consists of {len(vocabulary)} words")
 
-classifier.learnFeatures(train_set, bow_features=30, verse_features=True,
-                         rhyme_features=5, vocabulary=vocabulary, trace=True)
+# Train the baseline classifier with just word features
+classifier.learnFeatures(train_set, bow_features=30, verse_features=False,
+                         rhyme_features=0, vocabulary=vocabulary, trace=True)
 classifier.train(train_set, trace=True)
 
+# Evaluate the classifier on the test data
 predicted = list()
 gold = [doc[1] for doc in test_set]
 for doc in test_set:
     predicted.append(classifier.classify(doc[0]))
-
 eva = Evaluation(gold, predicted)
 eva.fullEval()

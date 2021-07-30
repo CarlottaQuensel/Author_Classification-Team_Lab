@@ -60,8 +60,7 @@ class MaxEnt():
             data, bow_features, verse_features, rhyme_features)
 
         # Initialize a random weight for each learned feature
-        self.weights = [np.random.randint(-10, 10)
-                        for i in range(len(self.features))]
+        self.weights = [1 for i in range(len(self.features))]
 
         # Save all authors of the training data to simplify classification
         self.labels = sorted({feature.label for feature in self.features})
@@ -202,9 +201,9 @@ class MaxEnt():
         # Keep track of the number of optimization steps
         i = 1
 
-        # Stop optimization when the accuracy converges
-        # default imprivement threshold: 0.1%
-        while new_accuracy - old_accuracy >= min_improvement:
+        # Stop optimization after at least ten iteration steps or when the 
+        # accuracy converges (default improvement threshold: 0.1%)
+        while new_accuracy - old_accuracy >= min_improvement or i < 11:
 
             # Don't reassign the new weights in the first step
             if len(new_lambda):
