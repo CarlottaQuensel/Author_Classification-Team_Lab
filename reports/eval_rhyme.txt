@@ -1,0 +1,322 @@
+The vocabulary consists of 25677 words
+The classifier learned 900 features for 30 classes.
+0 - author: Alfred, Lord Tennyson
+1 - author: Alfred, Lord Tennyson, poem contains aben
+2 - author: Alfred, Lord Tennyson, poem contains aber
+3 - author: Alfred, Lord Tennyson, poem contains achieved
+29 - author: Alfred, Lord Tennyson, poem has a aaxx rhyme scheme
+30 - author: Algernon Charles Swinburne
+31 - author: Algernon Charles Swinburne, poem contains 1530
+32 - author: Algernon Charles Swinburne, poem contains absolution
+33 - author: Algernon Charles Swinburne, poem contains ached
+59 - author: Algernon Charles Swinburne, poem has a abbb rhyme scheme
+60 - author: Ben Jonson
+61 - author: Ben Jonson, poem contains abused
+62 - author: Ben Jonson, poem contains acorns
+63 - author: Ben Jonson, poem contains acquit
+89 - author: Ben Jonson, poem has a aaaa rhyme scheme
+90 - author: Carl Sandburg
+91 - author: Carl Sandburg, poem contains 1862
+92 - author: Carl Sandburg, poem contains 1945
+93 - author: Carl Sandburg, poem contains abbadabba
+119 - author: Carl Sandburg, poem has a abbb rhyme scheme
+120 - author: Dean Young
+121 - author: Dean Young, poem contains 000
+122 - author: Dean Young, poem contains 14th
+123 - author: Dean Young, poem contains 15th
+149 - author: Dean Young, poem has a aaaa rhyme scheme
+150 - author: Edgar Lee Masters
+151 - author: Edgar Lee Masters, poem contains abysm
+152 - author: Edgar Lee Masters, poem contains anarchists
+153 - author: Edgar Lee Masters, poem contains anne
+179 - author: Edgar Lee Masters, poem has a aaaa rhyme scheme
+180 - author: Edmund Spenser
+181 - author: Edmund Spenser, poem contains abashed
+182 - author: Edmund Spenser, poem contains acidalian
+183 - author: Edmund Spenser, poem contains addorne
+209 - author: Edmund Spenser, poem has a abcx rhyme scheme
+210 - author: Emily Dickinson
+211 - author: Emily Dickinson, poem contains 1844
+212 - author: Emily Dickinson, poem contains adjoining
+213 - author: Emily Dickinson, poem contains aground
+239 - author: Emily Dickinson, poem has a aaaa rhyme scheme
+240 - author: Henry Wadsworth Longfellow
+241 - author: Henry Wadsworth Longfellow, poem contains achaians
+242 - author: Henry Wadsworth Longfellow, poem contains achieving
+243 - author: Henry Wadsworth Longfellow, poem contains affluence
+269 - author: Henry Wadsworth Longfellow, poem has a abbb rhyme scheme
+270 - author: Jane Hirshfield
+271 - author: Jane Hirshfield, poem contains alum
+272 - author: Jane Hirshfield, poem contains amazes
+273 - author: Jane Hirshfield, poem contains amplifying
+299 - author: Jane Hirshfield, poem has a aaaa rhyme scheme
+300 - author: John Ashbery
+301 - author: John Ashbery, poem contains 1980
+302 - author: John Ashbery, poem contains 26th
+303 - author: John Ashbery, poem contains abacus
+329 - author: John Ashbery, poem has a abcx rhyme scheme
+330 - author: John Donne
+331 - author: John Donne, poem contains accessory
+332 - author: John Donne, poem contains actives
+333 - author: John Donne, poem contains additions
+359 - author: John Donne, poem has a aaaa rhyme scheme
+360 - author: John Milton
+361 - author: John Milton, poem contains aarons
+362 - author: John Milton, poem contains abaddon
+363 - author: John Milton, poem contains abarim
+389 - author: John Milton, poem has a abbb rhyme scheme
+390 - author: Kahlil Gibran
+391 - author: Kahlil Gibran, poem contains aeons
+392 - author: Kahlil Gibran, poem contains aloneness
+393 - author: Kahlil Gibran, poem contains aloofness
+419 - author: Kahlil Gibran, poem has a abcx rhyme scheme
+420 - author: Kay Ryan
+421 - author: Kay Ryan, poem contains 2001
+422 - author: Kay Ryan, poem contains activities
+423 - author: Kay Ryan, poem contains adapting
+449 - author: Kay Ryan, poem has a aaaa rhyme scheme
+450 - author: Percy sshe Shelley
+451 - author: Percy sshe Shelley, poem contains 1213
+452 - author: Percy sshe Shelley, poem contains 1279
+453 - author: Percy sshe Shelley, poem contains 57
+479 - author: Percy sshe Shelley, poem has a aaaa rhyme scheme
+480 - author: Rae Armantrout
+481 - author: Rae Armantrout, poem contains abdicated
+482 - author: Rae Armantrout, poem contains ability
+483 - author: Rae Armantrout, poem contains abjection
+509 - author: Rae Armantrout, poem has a abbb rhyme scheme
+510 - author: Robert Browning
+511 - author: Robert Browning, poem contains 11th
+512 - author: Robert Browning, poem contains 1266
+513 - author: Robert Browning, poem contains 12th
+539 - author: Robert Browning, poem has a aaaa rhyme scheme
+540 - author: Robert Herrick
+541 - author: Robert Herrick, poem contains aberrations
+542 - author: Robert Herrick, poem contains almshouse
+543 - author: Robert Herrick, poem contains ambergris
+569 - author: Robert Herrick, poem has a aaaa rhyme scheme
+570 - author: Samuel Menashe
+571 - author: Samuel Menashe, poem contains amu
+572 - author: Samuel Menashe, poem contains authorized
+573 - author: Samuel Menashe, poem contains bathtub
+599 - author: Samuel Menashe, poem has a abbb rhyme scheme
+600 - author: Sir Philip Sidney
+601 - author: Sir Philip Sidney, poem contains adoptive
+602 - author: Sir Philip Sidney, poem contains applies
+603 - author: Sir Philip Sidney, poem contains archaic
+629 - author: Sir Philip Sidney, poem has a aaaa rhyme scheme
+630 - author: Thomas Hardy
+631 - author: Thomas Hardy, poem contains 1915
+632 - author: Thomas Hardy, poem contains 1916
+633 - author: Thomas Hardy, poem contains 1918
+659 - author: Thomas Hardy, poem has a aaaa rhyme scheme
+660 - author: W. S. Di Piero
+661 - author: W. S. Di Piero, poem contains 1954
+662 - author: W. S. Di Piero, poem contains abraded
+663 - author: W. S. Di Piero, poem contains acid
+689 - author: W. S. Di Piero, poem has a abbb rhyme scheme
+690 - author: W. S. Merwin
+691 - author: W. S. Merwin, poem contains ancestry
+692 - author: W. S. Merwin, poem contains anonymous
+693 - author: W. S. Merwin, poem contains assortment
+719 - author: W. S. Merwin, poem has a abcx rhyme scheme
+720 - author: Walt Whitman
+721 - author: Walt Whitman, poem contains 16
+722 - author: Walt Whitman, poem contains 19
+723 - author: Walt Whitman, poem contains 20
+749 - author: Walt Whitman, poem has a aaaa rhyme scheme
+750 - author: William Blake
+751 - author: William Blake, poem contains adona
+752 - author: William Blake, poem contains africs
+753 - author: William Blake, poem contains appall
+779 - author: William Blake, poem has a abbb rhyme scheme
+780 - author: William Butler Yeats
+781 - author: William Butler Yeats, poem contains abed
+782 - author: William Butler Yeats, poem contains accidental
+783 - author: William Butler Yeats, poem contains accomplished
+809 - author: William Butler Yeats, poem has a aaaa rhyme scheme
+810 - author: William Shakespeare
+811 - author: William Shakespeare, poem contains abuses
+812 - author: William Shakespeare, poem contains admird
+813 - author: William Shakespeare, poem contains ado
+839 - author: William Shakespeare, poem has a abcx rhyme scheme
+840 - author: William Wordsworth
+841 - author: William Wordsworth, poem contains 120
+842 - author: William Wordsworth, poem contains abbey
+843 - author: William Wordsworth, poem contains abodes
+869 - author: William Wordsworth, poem has a abbb rhyme scheme
+870 - author: Yusef Komunyakaa
+871 - author: Yusef Komunyakaa, poem contains 022
+872 - author: Yusef Komunyakaa, poem contains 1865
+873 - author: Yusef Komunyakaa, poem contains 1866
+899 - author: Yusef Komunyakaa, poem has a aaaa rhyme scheme
+Accuracy with random weights: 0.08759124087591241.
+iteration  1 : accuracy 0.06569343065693431
+                loss 559.2867350061217     
+The training consisted of 1 optimization steps in which the accuracy changed from 0.08759124087591241 to 0.06569343065693431 and the error changed from 559.2867350061217 to 559.2867350061217.
+                           Precision Recall F1-Score
+Alfred, Lord Tennyson      0.051     0.8    0.096   
+Algernon Charles Swinburne 1         0.0    0.0     
+Ben Jonson                 0.0       0.0    0       
+Carl Sandburg              1         0.0    0.0     
+Dean Young                 1         0.0    0.0     
+Edgar Lee Masters          0.0       0.0    0       
+Edmund Spenser             1         0.0    0.0     
+Emily Dickinson            0.0       0.0    0       
+Henry Wadsworth Longfellow 1         0.0    0.0     
+Jane Hirshfield            1         0.0    0.0     
+John Ashbery               1         0.0    0.0     
+John Donne                 1         0.0    0.0     
+John Milton                1         0.0    0.0     
+Kahlil Gibran              1         0.0    0.0     
+Kay Ryan                   1         0.0    0.0     
+Percy sshe Shelley         0.0       0.0    0       
+Rae Armantrout             0.0       0.0    0       
+Robert Browning            1         0.0    0.0     
+Robert Herrick             1         0.0    0.0     
+Samuel Menashe             1         0.0    0.0
+Sir Philip Sidney          1         0.0    0.0
+Thomas Hardy               0.0       0.0    0
+W. S. Di Piero             1         0.0    0.0
+W. S. Merwin               0.0       0.0    0
+Walt Whitman               1         0.0    0.0
+William Blake              0.0       0.0    0
+William Butler Yeats       1         0.0    0.0
+William Shakespeare        1         0.0    0.0
+William Wordsworth         0.0       0.0    0
+Yusef Komunyakaa           1         0.0    0.0
+Micro-avg                  0.047     0.047  0.047
+Macro-avg                  0.668     0.027  0.003
+____________________
+Confusion Matrix:
+
+      Predicted:
+     |
+      A0 |A1 |A2 |A3 |A4 |A5 |A6 |A7 |A8 |A9 |A10|A11|A12|A13|A14|A15|A16|A17|A18|A19|A20|A21|A22|A23|A24|A25|A26|A27|A28|A29|
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+
+Gold:|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |  
+ |   |
+A0   |16 |0  |3  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |1 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A1   |9  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |1  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A2   |9  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A3   |7  |0  |0  |0  |0  |0  |0  |2  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A4   |10 |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A5   |9  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A6   |8  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |1  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A7   |15 |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A8   |8  |0  |1  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |1  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A9   |8  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |1  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A10  |12 |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A11  |10 |0  |1  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A12  |5  |0  |3  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |1 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A13  |8  |0  |0  |0  |0  |1  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A14  |10 |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A15  |11 |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A16  |16 |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A17  |8  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |2 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A18  |10 |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A19  |9  |0  |1  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A20  |10 |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A21  |10 |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A22  |8  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |1  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A23  |9  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |1  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A24  |11 |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A25  |10 |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A26  |11 |0  |1  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A27  |22 |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A28  |13 |0  |2  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+A29  |10 |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |0  |1  |0  |0  |0 
+ |0  |
+-----+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+
+
+Author keys:
+A0  : Alfred, Lord Tennyson
+A1  : Algernon Charles Swinburne
+A2  : Ben Jonson
+A3  : Carl Sandburg
+A4  : Dean Young
+A5  : Edgar Lee Masters
+A6  : Edmund Spenser
+A7  : Emily Dickinson
+A8  : Henry Wadsworth Longfellow
+A9  : Jane Hirshfield
+A10 : John Ashbery
+A11 : John Donne
+A12 : John Milton
+A13 : Kahlil Gibran
+A14 : Kay Ryan
+A15 : Percy sshe Shelley
+A16 : Rae Armantrout
+A17 : Robert Browning
+A18 : Robert Herrick
+A19 : Samuel Menashe
+A20 : Sir Philip Sidney
+A21 : Thomas Hardy
+A22 : W. S. Di Piero
+A23 : W. S. Merwin
+A24 : Walt Whitman
+A25 : William Blake
+A26 : William Butler Yeats
+A27 : William Shakespeare
+A28 : William Wordsworth
+A29 : Yusef Komunyakaa
