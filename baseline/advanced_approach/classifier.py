@@ -1,18 +1,10 @@
 # -*- coding: utf-8 -*-
-from numpy.lib.function_base import gradient
 from advanced_features import *
 from document import Poem
 import numpy as np
 
 
 class MaxEnt():
-    '''
-    Author: Katrin Schmidt
-    1. Initialize random weights between -10 and +10 (= lambda)
-    2. Calculate accuracy of application of these lambdas
-    3. Improve accuracy by calculation the derivation and adjusting the lambdas
-    4. Return best lambdas for each feature
-    '''
 
     # Initialize a list of features and corresponding weights
     weights = list()
@@ -20,9 +12,9 @@ class MaxEnt():
 
     def __init__(self, data: list[tuple[Poem, str]] = None, class_features: int = None) -> None:
         """
+        Initialize a Maximum Entropy classifier and learn the features and weights if data is given.
         Author: Katrin Schmidt
-        Initializing an instance of a Maximum Entropy classifier, if data is
-        already given, then also learning class features
+
         Args:
             data (list[tuple[Poem, str]], optional):
                 Dataset as a list of Poem-author pairs. Defaults to None.
@@ -35,53 +27,46 @@ class MaxEnt():
             else:
                 self.learnFeatures(data)
 
-    def learnFeatures(self, data: list[tuple[Poem, str]], bow_features: int = 30, verse_features: bool = True, rhyme_features: int = 5, vocabulary: list[str] = None, trace: bool = False) -> None:
+    def learnFeatures(self, data: list[tuple[Poem, str]], bow_features: int = 30, verse_features: bool = True, rhyme_features: int = 0, vocabulary: list[str] = None, trace: bool = False) -> None:
         """
+        Initialize F and λi for the classifier by learning the most informative features for every author.
+        
+        The features consist of an author, a form and a document property, e.g.
+        label="Shakespeare" and property="aabb" (form="rhyme_scheme")
         Author: Carlotta Quensel (see module features.py)
-        Compute the best features for the classifier based on pmi between
-        classes and document features in a dataset and save them in a list with
-        a matching list of (untrained) weights. The features are saved as
-        functions for the Max Ent classification and have an associated label
-        and a document property as a number, e.g.
-        -> label="Shakespeare" and property=45 (index of "Thou", is in the document).
 
         Args:
             data (list[tuple[Poem, str]]):
-                Dataset consisting of a list of document-label pairs,
-                where the documents are word vectors
+                Dataset consisting of a list of poem author pairs,
+                where the poems have a word vector, verse count and rhyme scheme
             bow_features (int, optional):
-                The maximum number of bag of word features learned per author, defaults to 30.
+                The number of bag of word features learned per author, defaults to 30.
             verse_features (bool, optional):
                 Determines if the classifier learns verse counts or not, defaults to False.
             rhyme_features (int, optional):
                 Determines how many (if any) rhyme scheme features are learned per author,
-                defaults to 5.
+                defaults to 0.
             vocabulary (dict[str], optional):
-                The assignment of words to word vector indices used
-                in the given data set
+                The assignment of words to word vector indices used 
+                to show learned features if the user set trace=True
             trace (bool, optional):
-                If the vocabulary is given and the user wishes to trace the feature learning,
-                30 features are printed out after learning
+                Given the vocabulary, show a selection of learned features
         """
         if vocabulary:
             self.vocabulary = vocabulary
 
-        # Learning the feature-functions uses PMI and is explained more
-        # thoroughly in learnFeatures.py
+        # Learn features (Fi) using PMI (explained in learnFeatures.py)
         self.features = learnFeatures(
             data, bow_features, verse_features, rhyme_features)
 
-        # Each function has a corresponding weight, so the same number of
-        # weights are randomly initialized
+        # Initialize a random weight for each learned feature
         self.weights = [np.random.randint(-10, 10)
                         for i in range(len(self.features))]
 
-        # The classifier also has all labels of the training data saved
-        # to simplify classification
+        # Save all authors of the training data to simplify classification
         self.labels = sorted({feature.label for feature in self.features})
 
-        # After learning the features, the number of learned features is shown and if
-        # the learning is traced, also five features per author
+        # Show a selection of learned features if the user tracks the training process
         print(
             f"The classifier learned {len(self.features)} features for {len(self.labels)} classes.")
         if trace and vocabulary:
@@ -99,16 +84,13 @@ class MaxEnt():
 
     def classify(self, document: list[int], in_training: str = False, weights: list[int] = None):
         """
-        Predicts the most probable of all learned authors for a poem. 
-        The Maximum Entropy classifier works
-        with a function of a document and label, returning either 1 if if applies
-        or 0 if it doesn't apply to the document-label pair and the function's
-        correspinding weight. The probability of a label y given a document is
-        the exponential function of the sum of all weights with applied functions
-        divided (normalized) by the sum of this exponential for all possible labels:
-        p(y|doc) = exp(Σᵢ wᵢ·fᵢ(y,doc)) / Σ(y') exp(Σᵢ wᵢ·fᵢ(y',doc)).
-        The classifier computes probabilities for all labels and returns the
-        highest scoring label or, in training, the score itself
+        Predicts the most probable of all learned authors for a poem or returns all probabilities in training. 
+
+        The Maximum Entropy classifier works by applying a binary function to
+        a poem label pair to switch a weight on or off depending on a feature of 
+        the poem and the author. The score of an author is determined as the 
+        exponential of the sum of all switched on weights normalized by the sum of
+        all authors' scores: p(a|poem) = exp(Σᵢ wᵢ·fᵢ(a,poem)) / Σ(a') exp(Σᵢ wᵢ·fᵢ(a',poem)).
         Author: Carlotta Quensel
 
         Args:
