@@ -78,7 +78,7 @@ class Poem():
         vec = [0 for i in range(len(vocab))]
         for word in self.tokens:
             try:
-                vec[vocab[re.sub("[^0-9A-Za-z]","", word)]] = 1
+                vec[vocab[word]] = 1
             except KeyError:
                 pass
         self.vector = vec

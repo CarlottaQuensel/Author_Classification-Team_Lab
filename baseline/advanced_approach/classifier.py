@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from numpy.lib.function_base import gradient
 from advanced_features import *
 from document import Poem
 import numpy as np
@@ -34,7 +35,7 @@ class MaxEnt():
             else:
                 self.learnFeatures(data)
 
-    def learnFeatures(self, data: list[tuple[Poem, str]], class_features: int = 50, vocabulary: list[str] = None, trace: bool = False) -> None:
+    def learnFeatures(self, data: list[tuple[Poem, str]], bow_features: int = 30, verse_features: bool = True, rhyme_features: int = 5, vocabulary: list[str] = None, trace: bool = False) -> None:
         """
         Author: Carlotta Quensel (see module features.py)
         Compute the best features for the classifier based on pmi between
@@ -48,8 +49,13 @@ class MaxEnt():
             data (list[tuple[Poem, str]]):
                 Dataset consisting of a list of document-label pairs,
                 where the documents are word vectors
-            class_features (int, optional):
-                The maximum number of features learned per class, default 50
+            bow_features (int, optional):
+                The maximum number of bag of word features learned per author, defaults to 30.
+            verse_features (bool, optional):
+                Determines if the classifier learns verse counts or not, defaults to False.
+            rhyme_features (int, optional):
+                Determines how many (if any) rhyme scheme features are learned per author,
+                defaults to 5.
             vocabulary (dict[str], optional):
                 The assignment of words to word vector indices used
                 in the given data set
@@ -62,12 +68,13 @@ class MaxEnt():
 
         # Learning the feature-functions uses PMI and is explained more
         # thoroughly in learnFeatures.py
-        self.features = learnFeatures(data, class_features)
+        self.features = learnFeatures(
+            data, bow_features, verse_features, rhyme_features)
 
         # Each function has a corresponding weight, so the same number of
         # weights are randomly initialized
         self.weights = [np.random.randint(-10, 10)
-                                          for i in range(len(self.features))]
+                        for i in range(len(self.features))]
 
         # The classifier also has all labels of the training data saved
         # to simplify classification
@@ -80,9 +87,7 @@ class MaxEnt():
         if trace and vocabulary:
             for i in range(0, len(self.features)):
                 if i % 30 in {0, 1, 2, 3, 29}:
-                    if self.features[i].form == "apriori":
-                        print(f"{i} - author: {self.features[i].label}")
-                    elif self.features[i].form == "bow":
+                    if self.features[i].form == "bow":
                         print(
                             f"{i} - author: {self.features[i].label}, poem contains {list(self.vocabulary)[self.features[i].property]}")
                     elif self.features[i].form == "verse":
@@ -94,9 +99,8 @@ class MaxEnt():
 
     def classify(self, document: list[int], in_training: str = False, weights: list[int] = None):
         """
-        Author: Carlotta Quensel
-        The classifier predicts the most probable label from its label set for a
-        document given as a word vector. The Maximum Entropy classifier works
+        Predicts the most probable of all learned authors for a poem. 
+        The Maximum Entropy classifier works
         with a function of a document and label, returning either 1 if if applies
         or 0 if it doesn't apply to the document-label pair and the function's
         correspinding weight. The probability of a label y given a document is
@@ -105,6 +109,7 @@ class MaxEnt():
         p(y|doc) = exp(Σᵢ wᵢ·fᵢ(y,doc)) / Σ(y') exp(Σᵢ wᵢ·fᵢ(y',doc)).
         The classifier computes probabilities for all labels and returns the
         highest scoring label or, in training, the score itself
+        Author: Carlotta Quensel
 
         Args:
             document (list[int]):
@@ -126,7 +131,7 @@ class MaxEnt():
             for the derivative calculation
 
         """
-        # The default weights to compute the probabilities are the classifier's own weights
+        # Set the feature weights to the classifier weights as default
         if not weights:
             weights = self.weights
         elif len(weights) != len(self.weights):
@@ -134,15 +139,14 @@ class MaxEnt():
                 f"The classifier needs exactly one weight per function. You used {len(weights)} weights for {len(self.features)} functions.")
             return None
 
-        # The numerator of the Max Ent-probability is the exponential function
-        # of every weight*function with the current label and given document
+        # Add up Fi(poem, author)*λi for all features and weights for an auhtor's score given a poem
         numerator = dict()
         for label in self.labels:
             numerator[label] = np.exp(sum(
                 [weights[i]*self.features[i].apply(label, document) for i in range(len(self.features))]))
 
-        # As the denominator is the sum of the exponential for all labels, it
-        # only depends on the document and is the same for every label
+        # Normalize an author's score by the sum of all author's
+        # Same denominator for all authors = exp(Σauthors Σi Fi(poem, author)*λi 
         denominator = sum(numerator.values())
 
         # The probability of a label then just divides the numerator by the denominator
@@ -150,18 +154,17 @@ class MaxEnt():
         for label in self.labels:
             p[label] = numerator[label] / denominator
 
-        # The classifier either returns the most probable label or in training
-        # returns the label's probability
+        # Return the most probable author, or in training return all probabilities
         if in_training:
-            return p[in_training]
+            return p
         else:
             return max(p.keys(), key=lambda x: p[x])
 
     def accuracy(self, data: list[tuple[Poem, str]], weights: list[int] = None) -> float:
         """
-        Author: Carlotta Quensel
         Compute the basic accuracy of the classifier with a specific weight set as
         the percentage of correct predictions from the overall number of predictions
+        Author: Carlotta Quensel
 
         Args:
             data (list[tuple[Poem, str]]):
@@ -175,20 +178,24 @@ class MaxEnt():
         """
         if not weights:
             weights = self.weights
+        # Count true positives
         tp = 0
         for doc, label in data:
             prediction = self.classify(document=doc, weights=weights)
             if label == prediction:
                 tp += 1
+        # Accuracy = TP / TP+FN (in this multi-label setup, FP and TN are not counted)
         return tp/len(data)
 
     def train(self, data: list[tuple[Poem, str]], min_improvement: float = 0.001, trace: bool = False):
         '''
-        Author: Katrin Schmidt (main),
-                Carlotta Quensel (trace, loss and accuracy)
         Method that trains the model via multivariable linear optimization.
         Since the optimization for the lambda vector needs to happen simultaneous,
         the iterations stop after it counts 100 (instead of a specific value).
+        Author: Katrin Schmidt (original code, for detailed changes see 
+                midterm submission)
+                Carlotta Quensel (trace, loss and accuracy, switch from 
+                calculating individual partial derivatives to gradient)
 
         Args:
             data (list[tuple[Poem, str]]):
@@ -200,41 +207,38 @@ class MaxEnt():
                 the accuracy during the iterative process.
         '''
 
-        # First compute old accuracy with random weights
-        # and keep track of the overall loss (sum of the gradient)
+        # Track accuracy and loss during training
         old_accuracy = 0
         loss = list()
         new_accuracy = self.accuracy(data)
+        # Show the initial accuracy if wanted by the user
         if trace:
             print(f"Accuracy with random weights: {new_accuracy}.")
             acc = [new_accuracy]
         new_lambda = list()
 
-        # Set control variable i to 1 to keep track of the optimization steps
+        # Keep track of the number of optimization steps
         i = 1
 
-        # Optimize the weights until the improvement drops below a
-        # threshold (currently at least 0.1% improvement in accuracy)
+        # Stop optimization when the accuracy converges
+        # default imprivement threshold: 0.1%
         while new_accuracy - old_accuracy >= min_improvement:
 
             # Don't reassign the new weights in the first step
             if len(new_lambda):
                 self.weights = new_lambda
 
-            # Iterate over features and compute the partial_derivative
-            # and save the updated weights temporarily
-            new_lambda = [self.weights[i] + self.partial_derivative(
-                data, lambda_i=i) for i in range(len(self.features))]
-
-            # Update accuracy and derivative or loss to check improvement
-            # (acc -> 1, loss -> 0)
-            new_loss = abs(
-                sum([x1-x2 for (x1, x2) in zip(new_lambda, self.weights)]))
+            # Compute the gradient of F
+            gradient = self.partial_derivative(data)
+            # Optimize the weights through stochastic gradient ascent
+            new_lambda = [self.weights[i] + gradient[i] for i in range(len(self.features))]
+            # Track the loss as the gradient's sum
+            new_loss = abs(sum(gradient))
+            # Update the accuracy with the optimized weights
             old_accuracy = new_accuracy
             new_accuracy = self.accuracy(data, new_lambda)
 
-            # Track the training progress by printing accuracy and loss
-            # for each optimization step
+            # Keep track of the accuracy and loss optimization for each iteration
             if trace:
                 print(
                     f"iteration {i:2} : accuracy {new_accuracy}\n{' ':16}loss {new_loss}")
@@ -242,52 +246,46 @@ class MaxEnt():
                 loss.append(new_loss)
             i += 1
 
+        # Show and return the training progress if the user wants to track it
         if trace:
             print(
                 f"The training consisted of {i-1} optimization steps in which the accuracy changed from {acc[0]} to {acc[-1]} and the error changed from {loss[0]} to {loss[-1]}.")
-            # If the user wants to track the training process, the accuracy and
-            # loss scores are returned to potentially plot the improvement
             return acc, loss
 
-    def partial_derivative(self, data: list[tuple[Poem, str]], lambda_i: int) -> list[float]:
+    def partial_derivative(self, data: list[tuple[Poem, str]]) -> list[float]:
         '''
-        Author: Katrin Schmidt
-        Method that computes the partial derivatives of the objective function F
-        by substracting the derivative of A from the derivative of B with regard
-        to λi.
+        Computes the gradient as a vector of partial derivative of the objective function
+        F_λi(x,y) with regard to λi.
+        Author: Katrin Schmidt (original code for individual partial derivatives λi, 
+                see midterm submission), 
+                Carlotta Quensel (for time optimization with new Poem class: conversion 
+                into gradient from all λi, list abstractions, getting p_λi(label,document)
+                for all documents/labels at once instead of for each λi)
 
         Args:
             data (list[tuple[Poem,str]]):
                 Dataset as a list of Poem-author pairs to apply
                 the partial dervative function to for each weight λi
-            lambda_i (int):
-                Index of the weight with regard to which the derivative
-                is currently calculated
         Returns:
             list[float]: Gradient comprised of partial derivatives of the function F
         '''
+        # Calculate dF/dλi as dA/dλi - dB/dλi
+        # dA/dλi = Σdata F_λi(poem,author) 
+        #        number of poem author training pairs correctly recognized by F
+        derivative_A = [sum([self.features[lambda_i].apply(
+            gold_label, document) for (document, gold_label) in data]) for lambda_i in range(len(self.weights))]
 
-        # Set derivative of A and B to zero
-        derivative_A = 0
-        derivative_B = 0
+        # dB/dλi = Σdata Σauthors F_λi(poem,author) 
+        #          add up the probabilities of all poem author pairs 
+        #          recognized by F from the training poems
+        derivative_B = []
+        # Probabilities for every author sorted by the poems
+        p_prime = [self.classify(document, in_training=True)
+                   for document, gold_label in data]
+        # For each weight, add up the probabilities of each poem author combination that F applies to
+        for lambda_i in range(len(self.weights)):
+            derivative_B.append(sum([sum([self.features[lambda_i].apply(prime_label, document)*p_prime[i][prime_label]
+                                for prime_label in p_prime[i]]) for i, (document, gold_label) in enumerate(data)]))
 
-        for (document, gold_label) in data:
-            # Calculate first summand by counting the number of
-            # correctly recognized document-label pairs
-            derivative_A += self.features[lambda_i].apply(gold_label, document)
-
-            # Calculate second summmand as the probability of all
-            # label-doc pairs that could be recognized
-            for prime_label in self.labels:
-
-                # Feature is either 0 or 1 -> can be replaced with an if-query
-                # to minimize the number of classifications during training
-                # that would be multiplied with 0:
-                if self.features[lambda_i].apply(prime_label, document):
-
-                    # Probability pλ(y|x) = exp(sum(weights_for_y_given_x)) /
-                    #                       exp(sum(weights_for_y'_given_x))
-                    derivative_B += self.classify(document, in_training=prime_label)
-
-        # Calculate derivative of F
-        return derivative_A-derivative_B
+        # Calculate gradient of F
+        return [derivative_A[i]-derivative_B[i] for i in range(len(self.weights))]

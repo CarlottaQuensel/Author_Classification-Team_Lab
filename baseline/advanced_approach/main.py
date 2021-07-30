@@ -49,8 +49,7 @@ def build_dataset(raw_data: dict[str], train_split: float = 0.75, min_poems: int
         for i, poem in enumerate(raw_data[author]):
             if i < round_split:
                 # The words from the training data are used in the vocabulary without punctuation
-                tokens = set([re.sub(punctuation, "", token.lower())
-                             for token in tokenizer.tokenize(poem)])
+                tokens = set([token.lower() for token in tokenizer.tokenize(poem) if len(re.sub(punctuation, "", token))])
                 types = types.union(tokens)
                 # The train set consists of pairs of a poem and corresponding author label
                 train.append((poem, author))
@@ -72,8 +71,8 @@ classifier = MaxEnt()
 train_set, test_set, vocabulary = build_dataset(raw_data, max_author=30)
 print(f"The vocabulary consists of {len(vocabulary)} words")
 
-classifier.learnFeatures(train_set, class_features=30,
-                         vocabulary=vocabulary, trace=True)
+classifier.learnFeatures(train_set, bow_features=30, verse_features=False,
+                         rhyme_features=5, vocabulary=vocabulary, trace=True)
 classifier.train(train_set, trace=True)
 
 predicted = list()
