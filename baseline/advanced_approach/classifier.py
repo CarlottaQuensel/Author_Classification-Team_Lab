@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from advanced_features import *
+from features import *
 from document import Poem
 import numpy as np
 
