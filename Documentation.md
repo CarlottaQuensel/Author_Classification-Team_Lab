@@ -21,22 +21,19 @@ With that, the baseline implementation begins.
 
 ## The Program
 ### Main
-To run the implementation, the **path to the current folder** has to be set at the beginning of ```main.py```, which then runs all following methods consecutively. The program begins by splitting the data into training and test set. Following the features needed for the classifier are learned. For this purpose the user can choose on the data (training set or test set) and on the number of features that are learned at most for each class (or author). Furthermore the three features can be switched on or off:
+To run the implementation, the **path to the current folder** has to be set at the beginning of ```main.py```, which then runs all following methods consecutively. The program begins by splitting the data into training and test set. Following the features needed for the classifier are learned. For this purpose the user can choose on the data (training set or test set) and on the number of features that are learned at most for each class (or author). Furthermore the three features can be adjusted. While the verse features can be switched on or off, the bow as well as the rhyme features can be changed with respect to their number:
 > ```classifier.learnFeatures(train_set, bow_features=30, verse_features=True,```
                       >```rhyme_features=5, vocabulary=vocabulary, trace=True)```
 
 ### Features
-The classifier uses ```advanced_features.py``` which was written by Carlotta and includes a class for maximum entropy features. Apart from that it includes two methods that calculate pointwise mutual information ("pmi") respectively for the bow-features and the rhyme-fetures. The verse-features are computed by a counting algorithm. The information of the several methods is then passed to the method which bundles them together and constructs them to a feature object.
-
-#### PMI
-In order to use primarily relevant features, the bow and the rhyme features are computed with pointwise mutual information. 
+The classifier uses ```features.py``` which was written by Carlotta and includes a class for maximum entropy features. Apart from that it includes two methods that calculate pointwise mutual information ("pmi") respectively for the bow-features and the rhyme-fetures. The verse-features are computed by a counting algorithm. The information of the several methods is then passed to the method which bundles them together and constructs them to a feature object.
 
 #### Bow
-The bow features consist of vectors and are constructed within ```document.py```.
+The bow features consist of vectors and are constructed within ```document.py```, learned with pmi in order to use primarily relevant features.
 
 #### Rhyme/Verses
-The rhymes are computed with the help of an additional pronouncing module, also in ```document.py```
-The verses are computed by a counting algorithm while iteration and then being put into several bins. The verse features are built within ```advanced_features.py```
+The rhymes are computed also learned with pmi. The method additionaly makes use of a pronouncing module, also in ```document.py```.
+The verses are computed by a counting algorithm while iteration and then being put into several bins. The verse features are built within ```features.py```
 
 
 ### Training
