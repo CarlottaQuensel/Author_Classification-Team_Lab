@@ -68,6 +68,7 @@ def learnFeatures(
     The function uses mutual pointwise information to compute the best word and
     rhyme features for each author and the average for the verse number.
     Author: Carlotta Quensel
+    Author: Katrin Schmidt (conversion of the verse count into feature object)
 
     Args:
         data (list[tuple[Poem, str]]):
@@ -291,6 +292,22 @@ def rhyme_pmi(data: list[tuple[Poem, str]]) -> dict[str, dict[str, float]]:
 
 
 def count_verses(data: list[tuple[Poem, str]]) -> dict[tuple[int], str]:
+    '''Compute the average verse count of each author and
+    assigns every author to a bin.
+    Author: Katrin Schmidt
+    Author: Carlotta Quensel (changed the original code from using lists of bins
+    to using a dictionary containing bins - during bug fixing)
+
+    Args: 
+        data(list[tuple[Poem, str]]):
+            List of poem-author pairs, the Poem.rhyme_scheme property and author
+            labels are counted
+
+    Returns:
+        dict[tuple[int], str]: 
+            Authors sorted by the their average verse range
+            in the form of: {(0,5): [author1, author2], (6,10): [author3, author4],...}
+    '''
 
     # Save the verse count of each poem sorted by author
     # so that {Author: [verse count of poem1, verse count of poem1, ...], ...}
@@ -309,35 +326,10 @@ def count_verses(data: list[tuple[Poem, str]]) -> dict[tuple[int], str]:
 
     # Initiate verse range bins as a dictionary of lower and upper bound tuples
     # for predetermined ranges (see report)
-    # Author: Carlotta Quensel during bug fixing,
-    #         original code directly below
     bins = {
         (0, 5): [], (5, 10): [], (10, 25): [], (25, 50): [], (50, 75): [], (75, 100): [],
         (100, 150): [], (150, 200): [], (200, 20000): []
     }
-
-    """Original code:
-    # Set bins
-    list_smaller_5 = []
-    list_smaller_10 = []
-    list_smaller_25 = []
-    list_smaller_50 = []
-    list_smaller_75 = []
-    list_smaller_100 = []
-    list_smaller_150 = []
-    list_smaller_200 = []
-    list_bigger_200 = []
-
-    all_lists = [
-        list_smaller_5, list_smaller_10, list_smaller_25, list_smaller_50,
-        list_smaller_75, list_smaller_100, list_smaller_150, list_smaller_200,
-        list_bigger_200
-    ]
-    all_keys = [
-        range(0,5), range(5,10), range(10,25), range(25,50), range(50,75),
-        range(75,100), range(100,150), range(150,200), range(200,3500)
-    ]
-    """
 
     # Sort each author into the correct range bin according to their average
     for Author in average_verse_count:
@@ -361,15 +353,63 @@ def count_verses(data: list[tuple[Poem, str]]) -> dict[tuple[int], str]:
         elif verse_length > 200:
             bins[(200, 20000)].append(Author)
 
-    # Return the authors sorted by the their average verse range
-    # Author: Carlotta Quensel during bug fixes,
-    #         Orinal code with conversion of lists into dictionary below
+    """Original code:
+    # Set bins
+    list_smaller_5 = []
+    list_smaller_10 = []
+    list_smaller_25 = []
+    list_smaller_50 = []
+    list_smaller_75 = []
+    list_smaller_100 = []
+    list_smaller_150 = []
+    list_smaller_200 = []
+    list_bigger_200 = []
+
+    # Create a list of all bins to make the bins iteratable
+    all_lists = [
+        list_smaller_5, list_smaller_10, list_smaller_25, list_smaller_50,
+        list_smaller_75, list_smaller_100, list_smaller_150, list_smaller_200,
+        list_bigger_200
+    ]
+
+    # Create a list of all keys to make the keys iteratable
+    all_keys = [
+        range(0,5), range(5,10), range(10,25), range(25,50), range(50,75),
+        range(75,100), range(100,150), range(150,200), range(200,3500)
+    ]
+
+    # Iterate over Authors in the dictionary 
+    # with their average verse length, in order
+    # to assign them to the bins.
+    for Author in average_dictionary:
+        verse_length = average_verse_count[Author]
+        if verse_length <= 5:
+            list_smaller_5.extend(Author)
+        elif verse_length <= 10 and verse_length > 5:
+            list_smaller_10.extend(Author)
+        elif verse_length <= 25 and verse_length > 10: 
+            list_smaller_25.extend(Author)
+        elif verse_length <= 50 and verse_length > 25:
+            list_smaller_50.extend(Author)
+        elif verse_length <= 75 and verse_length > 50:
+            list_smaller_75.extend(Author)
+        elif verse_length <= 100 and verse_length > 75:
+            list_smaller_100.extend(Author)
+        elif verse_length <= 150 and verse_length > 100:
+            list_smaller_150.extend(Author)
+        elif verse_length <= 200 and verse_length > 150:
+            list_smaller_200.extend(Author)
+        elif verse_length > 200:
+            list_bigger_200.extend(Author)
+
+    # conversion of lists into dictionary to get a form like
     # {(0,5): [author1, author2], (6,10): [author3, author4],...}
-    """
+    # so that a feature object can be created in learnFeatures:
     verse_feature_dictionary = {}
     for certain_list in all_lists:
         for key in all_keys:
             verse_feature_dictionary[key] = certain_list
     """
-
+    
+    # Return the authors sorted by the their average verse range
     return bins
