@@ -1,3 +1,4 @@
+# Author: Katrin Schmidt
 import nltk
 from nltk.tokenize import WordPunctTokenizer
 import pandas
