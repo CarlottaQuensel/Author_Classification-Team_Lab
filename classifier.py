@@ -29,7 +29,8 @@ class MaxEnt():
 
     def learnFeatures(self, data: list[tuple[Poem, str]], bow_features: int = 30, verse_features: bool = True, rhyme_features: int = 0, vocabulary: list[str] = None, trace: bool = False) -> None:
         """
-        Initialize F and λi for the classifier by learning the most informative features for every author.
+        Initialize F and λi for the classifier by learning 
+        the most informative features for every author.
         
         The features consist of an author, a form and a document property, e.g.
         label="Shakespeare" and property="aabb" (form="rhyme_scheme")
@@ -83,13 +84,14 @@ class MaxEnt():
 
     def classify(self, document: list[int], in_training: str = False, weights: list[int] = None):
         """
-        Predicts the most probable of all learned authors for a poem or returns all probabilities in training. 
+        Predicts the most probable of all learned authors for a poem 
+        or returns all probabilities in training. 
 
         The Maximum Entropy classifier works by applying a binary function to
         a poem label pair to switch a weight on or off depending on a feature of 
         the poem and the author. The score of an author is determined as the 
         exponential of the sum of all switched on weights normalized by the sum of
-        all authors' scores: p(a|poem) = exp(Σᵢ wᵢ·fᵢ(a,poem)) / Σ(a') exp(Σᵢ wᵢ·fᵢ(a',poem)).
+        all authors' scores.
         Author: Carlotta Quensel
 
         Args:
@@ -120,14 +122,15 @@ class MaxEnt():
                 f"The classifier needs exactly one weight per function. You used {len(weights)} weights for {len(self.features)} functions.")
             return None
 
-        # Add up Fi(poem, author)*λi for all features and weights for an auhtor's score given a poem
+        # Add up the poem-author pair (weighted) for all features 
+        # and weights for an auhtor's score given a poem
         numerator = dict()
         for label in self.labels:
             numerator[label] = np.exp(sum(
                 [weights[i]*self.features[i].apply(label, document) for i in range(len(self.features))]))
 
         # Normalize an author's score by the sum of all author's
-        # Same denominator for all authors = exp(Σauthors Σi Fi(poem, author)*λi 
+        # Same denominator for all authors
         denominator = sum(numerator.values())
 
         # The probability of a label then just divides the numerator by the denominator
@@ -135,7 +138,8 @@ class MaxEnt():
         for label in self.labels:
             p[label] = numerator[label] / denominator
 
-        # Return the most probable author, or in training return all probabilities
+        # Return the most probable author
+        # or in training return all probabilities
         if in_training:
             return p
         else:
@@ -159,20 +163,22 @@ class MaxEnt():
         """
         if not weights:
             weights = self.weights
+
         # Count true positives
         tp = 0
         for doc, label in data:
             prediction = self.classify(document=doc, weights=weights)
             if label == prediction:
                 tp += 1
+                
         # Accuracy = TP / TP+FN (in this multi-label setup, FP and TN are not counted)
         return tp/len(data)
 
     def train(self, data: list[tuple[Poem, str]], min_improvement: float = 0.001, trace: bool = False):
         '''
         Method that trains the model via multivariable linear optimization.
-        Since the optimization for the lambda vector needs to happen simultaneous,
-        the iterations stop after it counts 100 (instead of a specific value).
+        Stops the optimization process after at least ten iteration steps or when the 
+        accuracy converges (threshold: 0.1%))
         Author: Katrin Schmidt (original code, for detailed changes see 
                 midterm submission)
                 Carlotta Quensel (trace, loss and accuracy, switch from 
@@ -192,6 +198,7 @@ class MaxEnt():
         old_accuracy = 0
         loss = list()
         new_accuracy = self.accuracy(data)
+
         # Show the initial accuracy if wanted by the user
         if trace:
             print(f"Accuracy with random weights: {new_accuracy}.")
@@ -250,20 +257,22 @@ class MaxEnt():
         Returns:
             list[float]: Gradient comprised of partial derivatives of the function F
         '''
-        # Calculate dF/dλi as dA/dλi - dB/dλi
-        # dA/dλi = Σdata F_λi(poem,author) 
-        #        number of poem author training pairs correctly recognized by F
+        # Calculate the derivative of A
+        # which is the number of poem-author pairs correctly recognized by F
         derivative_A = [sum([self.features[lambda_i].apply(
             gold_label, document) for (document, gold_label) in data]) for lambda_i in range(len(self.weights))]
 
-        # dB/dλi = Σdata Σauthors F_λi(poem,author) 
-        #          add up the probabilities of all poem author pairs 
-        #          recognized by F from the training poems
+        # Calculate the derivative of B
+        # which adds up the probabilities of all poem-author pairs 
+        # recognized by F
         derivative_B = []
+
         # Probabilities for every author sorted by the poems
         p_prime = [self.classify(document, in_training=True)
                    for document, gold_label in data]
-        # For each weight, add up the probabilities of each poem author combination that F applies to
+
+        # For each weight, add up the probabilities  
+        # of each poem-author combination that F applies to
         for lambda_i in range(len(self.weights)):
             derivative_B.append(sum([sum([self.features[lambda_i].apply(prime_label, document)*p_prime[i][prime_label]
                                 for prime_label in p_prime[i]]) for i, (document, gold_label) in enumerate(data)]))
